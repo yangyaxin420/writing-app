@@ -1,6 +1,6 @@
 {
-  "name": "写页面",
-  "short_name": "写页面",
+  "name": "笔间",
+  "short_name": "笔间",
   "description": "个人写作空间 - 写小说、记灵感",
   "start_url": "/writing-app/",
   "scope": "/writing-app/",

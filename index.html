@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>写页面</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c4a882">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="写页面">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 /* ===== Reset & Base ===== */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -395,6 +401,7 @@ input[type="range"]::-moz-range-thumb {
     <div class="quick-actions">
       <button class="btn btn-primary" onclick="createNewWork()">+ 新作品</button>
       <button class="btn" onclick="createNewIdea()">* 记灵感</button>
+      <button class="btn btn-sm install-btn" id="install-btn" style="display:none;" onclick="installApp()">↓ 安装</button>
     </div>
 
     <div class="section-header"><h2>最近更新</h2></div>
@@ -1210,6 +1217,36 @@ window.addEventListener('beforeunload', () => {
     }
   }
 });
+
+// ============================================================
+// PWA: Service Worker Registration + Install Prompt
+// ============================================================
+let installPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  installPrompt = e;
+  const btn = document.getElementById('install-btn');
+  if (btn) btn.style.display = '';
+});
+
+window.addEventListener('appinstalled', () => {
+  installPrompt = null;
+  const btn = document.getElementById('install-btn');
+  if (btn) btn.style.display = 'none';
+});
+
+function installApp() {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  installPrompt.userChoice.then(() => { installPrompt = null; });
+}
 
 // ============================================================
 // INIT

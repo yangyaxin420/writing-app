@@ -379,6 +379,17 @@ input[type="range"]::-moz-range-thumb {
   .quick-actions { flex-direction: column; }
   .quick-actions .btn { padding: 10px; }
 }
+
+/* PWA standalone mode */
+@media all and (display-mode: standalone) {
+  body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); overscroll-behavior: none; }
+  #app { padding-left: calc(20px + env(safe-area-inset-left)); padding-right: calc(20px + env(safe-area-inset-right)); }
+  header { padding-top: max(20px, env(safe-area-inset-top)); }
+  .editor-textarea { -webkit-overflow-scrolling: touch; }
+}
+@media all and (display-mode: standalone) and (max-width: 520px) {
+  #app { padding-left: calc(16px + env(safe-area-inset-left)); padding-right: calc(16px + env(safe-area-inset-right)); }
+}
 </style>
 </head>
 <body>
@@ -543,6 +554,12 @@ function setTheme(key) {
   if (!THEMES[key]) key = 'default';
   document.documentElement.setAttribute('data-theme', key);
   localStorage.setItem('writing_theme', key);
+  // Update browser theme color for PWA
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    meta.setAttribute('content', bg || '#f8f6f3');
+  }
   // Update dots active state
   document.querySelectorAll('.theme-dot').forEach(el => {
     el.classList.toggle('active', el.dataset.theme === key);

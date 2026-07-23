@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写页面</title>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ===== Variables / Themes ===== */
+:root {
+  --bg: #f8f6f3;
+  --surface: #ffffff;
+  --surface-alt: #f4f1ec;
+  --border: #e8e4de;
+  --border-light: #f0ede8;
+  --text: #1d1d1f;
+  --text-secondary: #8e8e93;
+  --text-tertiary: #bbb7b0;
+  --accent: #c4a882;
+  --accent-hover: #b89b72;
+  --accent-light: #f0e8de;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 0.2s ease;
+}
+
+/* Theme: 晴空 */
+[data-theme="sky"] {
+  --bg: #f0f8ff;
+  --surface: #ffffff;
+  --surface-alt: #e6f3fa;
+  --border: #d0e4f0;
+  --border-light: #e6f3fa;
+  --text-secondary: #7a9eb5;
+  --text-tertiary: #a8c4d8;
+  --accent: #bae6fb;
+  --accent-hover: #7dd3fc;
+  --accent-light: #e0f2fe;
+}
+/* Theme: 薄荷 */
+[data-theme="mint"] {
+  --bg: #f0fdf4;
+  --surface: #ffffff;
+  --surface-alt: #e6f5ea;
+  --border: #c8e0d0;
+  --border-light: #e0f0e4;
+  --text-secondary: #78a088;
+  --text-tertiary: #a0c0ac;
+  --accent: #86cfa3;
+  --accent-hover: #5cb87a;
+  --accent-light: #dcfce7;
+}
+/* Theme: 奶油 */
+[data-theme="cream"] {
+  --bg: #fefceb;
+  --surface: #ffffff;
+  --surface-alt: #f8f3d8;
+  --border: #e8e2c8;
+  --border-light: #f2ecd0;
+  --text-secondary: #a09870;
+  --text-tertiary: #c0b898;
+  --accent: #fde68a;
+  --accent-hover: #fcd34d;
+  --accent-light: #fef9c3;
+}
+/* Theme: 纯白 */
+[data-theme="white"] {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-alt: #f0f0f0;
+  --border: #e0e0e0;
+  --border-light: #f0f0f0;
+  --text-secondary: #9e9e9e;
+  --text-tertiary: #c0c0c0;
+  --accent: #d0d0d0;
+  --accent-hover: #b0b0b0;
+  --accent-light: #f0f0f0;
+}
+
+/* Theme: 暮色 (柔和暗色) */
+[data-theme="dusk"] {
+  --bg: #3a3835;
+  --surface: #454240;
+  --surface-alt: #4e4b48;
+  --border: #5a5754;
+  --border-light: #4e4b48;
+  --text: #e0ddda;
+  --text-secondary: #a8a5a0;
+  --text-tertiary: #807d78;
+  --accent: #c4a882;
+  --accent-hover: #d4b892;
+  --accent-light: #4a4540;
+  --shadow: 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.25);
+}
+/* Theme: 夜蓝 (柔和暗色) */
+[data-theme="navy"] {
+  --bg: #2d3748;
+  --surface: #3a4556;
+  --surface-alt: #434e5e;
+  --border: #4e5968;
+  --border-light: #434e5e;
+  --text: #e2e8f0;
+  --text-secondary: #a0aec0;
+  --text-tertiary: #7a8898;
+  --accent: #7dd3fc;
+  --accent-hover: #38bdf8;
+  --accent-light: #3a4860;
+  --shadow: 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.25);
+}
+/* Theme: 雾灰 (柔和暗色) */
+[data-theme="charcoal"] {
+  --bg: #2a2a2a;
+  --surface: #363636;
+  --surface-alt: #404040;
+  --border: #4a4a4a;
+  --border-light: #404040;
+  --text: #e0e0e0;
+  --text-secondary: #9e9e9e;
+  --text-tertiary: #787878;
+  --accent: #b0b0b0;
+  --accent-hover: #cccccc;
+  --accent-light: #3a3a3a;
+  --shadow: 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* ===== Typography ===== */
+h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
+h2 { font-size: 1.15rem; font-weight: 600; }
+h3 { font-size: 0.95rem; font-weight: 500; color: var(--text-secondary); }
+a { color: inherit; text-decoration: none; }
+
+/* ===== Layout ===== */
+#app { max-width: 720px; margin: 0 auto; padding: 0 20px; min-height: 100vh; }
+
+/* ===== Header ===== */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+}
+header .back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.9rem; color: var(--text-secondary); cursor: pointer;
+  background: none; border: none; padding: 4px 0;
+  transition: color var(--transition);
+}
+header .back:hover { color: var(--text); }
+header .title { font-size: 1.15rem; font-weight: 600; }
+header .actions { display: flex; gap: 12px; align-items: center; }
+
+/* ===== Pages ===== */
+.page { display: none; animation: fadeIn 0.25s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== Stats Bar (compact) ===== */
+.stats-bar {
+  display: flex; gap: 4px; margin-bottom: 16px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 6px;
+  justify-content: space-around;
+}
+.stat-item {
+  text-align: center; cursor: pointer; transition: all var(--transition);
+  padding: 2px 8px; border-radius: 4px; flex: 1;
+}
+.stat-item:hover { background: var(--surface-alt); }
+.stat-item .si-value { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+.stat-item .si-label { font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.02em; }
+
+/* ===== Theme Switcher Dots ===== */
+.theme-dots { display: flex; gap: 5px; align-items: center; }
+.theme-dot {
+  width: 14px; height: 14px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid var(--border); transition: all var(--transition);
+  flex-shrink: 0;
+}
+.theme-dot:hover { transform: scale(1.25); }
+.theme-dot.active { border-color: var(--text); box-shadow: 0 0 0 1.5px var(--text); }
+
+/* ===== Section Header ===== */
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px; padding-top: 4px;
+}
+.section-header h2 { font-size: 1rem; color: var(--text-secondary); font-weight: 500; }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: var(--radius-sm);
+  font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none;
+  transition: all var(--transition); background: var(--surface); color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn:hover { border-color: var(--accent); background: var(--accent-light); }
+.btn-primary {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-sm { padding: 5px 12px; font-size: 0.82rem; }
+.btn-ghost { background: transparent; border-color: transparent; padding: 6px 10px; }
+.btn-ghost:hover { background: var(--surface-alt); border-color: var(--border); }
+.btn-danger { color: #c44; border-color: #f0d8d8; }
+.btn-danger:hover { background: #fdf0f0; border-color: #c44; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ===== Quick Actions ===== */
+.quick-actions { display: flex; gap: 8px; margin-bottom: 24px; }
+.quick-actions .btn { flex: 1; justify-content: center; padding: 8px 12px; font-size: 0.82rem; }
+
+/* ===== Recent List ===== */
+.recent-list { margin-bottom: 32px; }
+.recent-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: background var(--transition);
+  border-bottom: 1px solid var(--border-light);
+}
+.recent-item:last-child { border-bottom: none; }
+.recent-item:hover { background: var(--surface-alt); }
+.recent-item .ri-title { font-size: 0.93rem; font-weight: 500; }
+.recent-item .ri-meta { font-size: 0.78rem; color: var(--text-tertiary); }
+
+/* ===== Cards Grid ===== */
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 16px; cursor: pointer; transition: all var(--transition); position: relative;
+}
+.card:hover { box-shadow: var(--shadow-hover); border-color: var(--accent); }
+.card .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+.card .card-type {
+  font-size: 0.72rem; color: var(--accent); margin-bottom: 8px;
+  display: inline-block; padding: 1px 0;
+}
+.card .card-meta { font-size: 0.78rem; color: var(--text-tertiary); }
+.card .card-excerpt { font-size: 0.82rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+.card .card-delete {
+  position: absolute; top: 10px; right: 12px;
+  font-size: 0.75rem; color: var(--text-tertiary); cursor: pointer;
+  background: none; border: none; padding: 2px 6px; border-radius: 4px;
+  opacity: 0; transition: opacity var(--transition);
+}
+.card:hover .card-delete { opacity: 1; }
+.card .card-delete:hover { color: #c44; background: #fdf0f0; }
+.card-grid.single { grid-template-columns: 1fr; }
+
+/* ===== Editor ===== */
+.editor-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.editor-title-input {
+  font-size: 1.2rem; font-weight: 600; border: none; background: transparent;
+  padding: 4px 0; outline: none; flex: 1; min-width: 120px;
+  border-bottom: 2px solid transparent; transition: border-color var(--transition);
+  font-family: inherit;
+}
+.editor-title-input:focus { border-bottom-color: var(--accent); }
+.editor-save-status { font-size: 0.78rem; color: var(--text-tertiary); white-space: nowrap; }
+
+.editor-toolbar {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+}
+.editor-toolbar .tool-group { display: flex; align-items: center; gap: 8px; }
+.editor-toolbar .tool-label { font-size: 0.78rem; color: var(--text-secondary); }
+.editor-toolbar .tool-value { font-size: 0.85rem; font-weight: 500; color: var(--text); min-width: 24px; text-align: center; }
+
+/* Font size slider */
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 80px; height: 3px;
+  background: var(--border); border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 14px; height: 14px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+  transition: transform var(--transition);
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; background: var(--accent); border-radius: 50%; border: none; cursor: pointer;
+}
+
+.editor-timer {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; color: var(--text-secondary); font-variant-numeric: tabular-nums;
+}
+.editor-timer .timer-icon { font-size: 0.8rem; }
+.editor-wordcount { font-size: 0.85rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+
+.editor-textarea {
+  width: 100%; min-height: calc(100vh - 320px); padding: 20px;
+  font-size: 16px; line-height: 1.9;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); resize: vertical;
+  outline: none; font-family: inherit;
+  transition: border-color var(--transition);
+}
+.editor-textarea:focus { border-color: var(--accent); }
+.editor-textarea::placeholder { color: var(--text-tertiary); }
+
+.editor-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 12px; padding-bottom: 40px;
+}
+.editor-footer .ef-meta { font-size: 0.78rem; color: var(--text-tertiary); }
+
+/* ===== Idea Editor ===== */
+.idea-editor-title {
+  width: 100%; font-size: 1.2rem; font-weight: 600; border: none; background: transparent;
+  padding: 8px 0; outline: none; border-bottom: 2px solid transparent;
+  margin-bottom: 16px; font-family: inherit;
+  transition: border-color var(--transition);
+}
+.idea-editor-title:focus { border-bottom-color: var(--accent); }
+.idea-editor-content {
+  width: 100%; min-height: 200px; padding: 16px;
+  font-size: 0.95rem; line-height: 1.8;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); resize: vertical;
+  outline: none; font-family: inherit;
+  transition: border-color var(--transition);
+}
+.idea-editor-content:focus { border-color: var(--accent); }
+
+/* ===== Empty State ===== */
+.empty-state {
+  text-align: center; padding: 48px 20px; color: var(--text-tertiary);
+}
+.empty-state .empty-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.5; }
+.empty-state .empty-text { font-size: 0.9rem; }
+
+/* ===== Modal / Confirm Dialog ===== */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25);
+  z-index: 100; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--surface); border-radius: var(--radius); padding: 28px 24px 20px;
+  max-width: 360px; width: 90%; box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  animation: fadeIn 0.2s ease;
+}
+.modal h3 { margin-bottom: 8px; font-weight: 600; color: var(--text); }
+.modal p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+.modal .btn-group { justify-content: flex-end; }
+
+/* ===== Responsive ===== */
+@media (max-width: 520px) {
+  #app { padding: 0 16px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .stats-bar { padding: 8px 4px; }
+  .stat-item .si-value { font-size: 0.95rem; }
+  .editor-toolbar { gap: 10px; padding: 8px 12px; }
+  .editor-textarea { padding: 14px; min-height: calc(100vh - 340px); }
+  .quick-actions { flex-direction: column; }
+  .quick-actions .btn { padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== HOME ===== -->
+  <section id="page-home" class="page active">
+    <header>
+      <div class="title">写页面</div>
+      <div class="actions" style="gap:6px;">
+        <div class="theme-dots" id="theme-dots"></div>
+        <button class="btn btn-sm btn-ghost" onclick="navigate('works')">作品</button>
+        <button class="btn btn-sm btn-ghost" onclick="navigate('ideas')">灵感</button>
+      </div>
+    </header>
+
+    <div class="stats-bar" id="home-stats"></div>
+
+    <div class="quick-actions">
+      <button class="btn btn-primary" onclick="createNewWork()">+ 新作品</button>
+      <button class="btn" onclick="createNewIdea()">* 记灵感</button>
+    </div>
+
+    <div class="section-header"><h2>最近更新</h2></div>
+    <div class="recent-list" id="home-recent"></div>
+  </section>
+
+  <!-- ===== WORKS ===== -->
+  <section id="page-works" class="page">
+    <header>
+      <button class="back" onclick="navigate('home')">← 返回</button>
+      <div class="title">作品</div>
+      <div class="actions">
+        <button class="btn btn-sm btn-primary" onclick="createNewWork()">+ 新建</button>
+      </div>
+    </header>
+    <div id="works-filter" style="display:flex;gap:6px;margin-bottom:16px;">
+      <button class="btn btn-sm filter-btn active-filter" data-filter="all" onclick="filterWorks('all')">全部</button>
+      <button class="btn btn-sm filter-btn" data-filter="novel" onclick="filterWorks('novel')">小说</button>
+      <button class="btn btn-sm filter-btn" data-filter="idea" onclick="filterWorks('idea')">灵感</button>
+    </div>
+    <div class="card-grid" id="works-grid"></div>
+  </section>
+
+  <!-- ===== EDITOR ===== -->
+  <section id="page-editor" class="page">
+    <header>
+      <button class="back" onclick="navigate('works')">← 返回</button>
+      <div class="actions">
+        <button class="btn btn-sm btn-ghost" onclick="exportWork()" id="btn-export">↓ 导出</button>
+        <button class="btn btn-sm btn-ghost" onclick="deleteCurrentWork()" id="btn-delete-work" style="color:var(--text-tertiary)">× 删除</button>
+      </div>
+    </header>
+
+    <div class="editor-header">
+      <input type="text" class="editor-title-input" id="editor-title" placeholder="作品标题" spellcheck="false">
+      <span class="editor-save-status" id="editor-save-status"></span>
+    </div>
+
+    <div class="editor-toolbar">
+      <div class="tool-group">
+        <span class="tool-label">字号</span>
+        <input type="range" id="font-size-slider" min="12" max="28" value="16">
+        <span class="tool-value" id="font-size-label">16</span>
+      </div>
+      <div class="tool-group" style="margin-left:auto;">
+        <span class="editor-wordcount" id="editor-wordcount">0 字</span>
+      </div>
+      <div class="tool-group">
+        <span class="editor-timer"><span class="timer-icon">◷</span> <span id="editor-timer">00:00:00</span></span>
+      </div>
+    </div>
+
+    <textarea class="editor-textarea" id="editor-content" placeholder="开始写吧……"></textarea>
+
+    <div class="editor-footer">
+      <span class="ef-meta" id="editor-last-saved"></span>
+    </div>
+  </section>
+
+  <!-- ===== IDEAS ===== -->
+  <section id="page-ideas" class="page">
+    <header>
+      <button class="back" onclick="navigate('home')">← 返回</button>
+      <div class="title">灵感</div>
+      <div class="actions">
+        <button class="btn btn-sm btn-primary" onclick="createNewIdea()">+ 新建</button>
+      </div>
+    </header>
+    <div class="card-grid" id="ideas-grid"></div>
+  </section>
+
+  <!-- ===== IDEA EDITOR ===== -->
+  <section id="page-idea-editor" class="page">
+    <header>
+      <button class="back" onclick="navigate('ideas')">← 返回</button>
+      <div class="title">编辑灵感</div>
+      <div class="actions">
+        <button class="btn btn-sm btn-ghost" onclick="deleteCurrentIdea()" style="color:var(--text-tertiary)">× 删除</button>
+      </div>
+    </header>
+    <input type="text" class="idea-editor-title" id="idea-editor-title" placeholder="灵感标题" spellcheck="false">
+    <textarea class="idea-editor-content" id="idea-editor-content" placeholder="记录你的灵感……"></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-bottom:40px;">
+      <button class="btn btn-primary" onclick="saveIdeaEdit()">保存</button>
+    </div>
+  </section>
+
+  <!-- ===== Modal ===== -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <h3 id="modal-title">确认</h3>
+      <p id="modal-text">确定要删除吗？</p>
+      <div class="btn-group">
+        <button class="btn" onclick="closeModal()">取消</button>
+        <button class="btn btn-danger" id="modal-confirm">删除</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// DATA LAYER
+// ============================================================
+const DB = {
+  getWorks() {
+    try { return JSON.parse(localStorage.getItem('writing_works') || '[]'); } catch { return []; }
+  },
+  saveWorks(works) {
+    localStorage.setItem('writing_works', JSON.stringify(works));
+  },
+  getSettings() {
+    try { return JSON.parse(localStorage.getItem('writing_settings') || '{"fontSize":16}'); } catch { return {fontSize:16}; }
+  },
+  saveSettings(s) {
+    localStorage.setItem('writing_settings', JSON.stringify(s));
+  },
+  genId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+};
+
+// ============================================================
+// THEME SYSTEM
+// ============================================================
+const THEMES = {
+  default:  { name: '原木', dot: '#c4a882' },
+  sky:      { name: '晴空', dot: '#bae6fb' },
+  mint:     { name: '薄荷', dot: '#86cfa3' },
+  cream:    { name: '奶油', dot: '#fde68a' },
+  white:    { name: '纯白', dot: '#d0d0d0' },
+  dusk:     { name: '暮色', dot: '#8a8070' },
+  navy:     { name: '夜蓝', dot: '#5a7a9a' },
+  charcoal: { name: '雾灰', dot: '#787878' },
+};
+
+function setTheme(key) {
+  if (!THEMES[key]) key = 'default';
+  document.documentElement.setAttribute('data-theme', key);
+  localStorage.setItem('writing_theme', key);
+  // Update dots active state
+  document.querySelectorAll('.theme-dot').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === key);
+  });
+}
+
+function getTheme() {
+  return localStorage.getItem('writing_theme') || 'default';
+}
+
+function renderThemeDots() {
+  const container = document.getElementById('theme-dots');
+  if (!container) return;
+  const current = getTheme();
+  container.innerHTML = Object.entries(THEMES).map(([key, t]) =>
+    `<div class="theme-dot ${key === current ? 'active' : ''}" data-theme="${key}"
+         style="background:${t.dot}" title="${t.name}"
+         onclick="setTheme('${key}')"></div>`
+  ).join('');
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  currentWorkId: null,
+  currentIdeaId: null,
+  worksFilter: 'novel',
+  timerInterval: null,
+  timerStartTime: null,
+  timerAccumulated: 0,
+  saveTimeout: null,
+  lastContent: '',
+};
+
+// ============================================================
+// ROUTER
+// ============================================================
+function navigate(page, params) {
+  window.location.hash = page + (params ? '?' + params : '');
+}
+
+function getPageFromHash() {
+  const hash = window.location.hash.slice(1) || 'home';
+  const parts = hash.split('?');
+  return { page: parts[0], params: parts[1] || '' };
+}
+
+function parseParams(qs) {
+  const params = {};
+  if (!qs) return params;
+  qs.split('&').forEach(p => {
+    const [k, v] = p.split('=');
+    params[decodeURIComponent(k)] = decodeURIComponent(v || '');
+  });
+  return params;
+}
+
+function router() {
+  const { page, params } = getPageFromHash();
+  const p = parseParams(params);
+
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+
+  // Stop any running timer
+  stopTimer();
+
+  switch (page) {
+    case 'home':
+      document.getElementById('page-home').classList.add('active');
+      renderHome();
+      break;
+    case 'works':
+      document.getElementById('page-works').classList.add('active');
+      renderWorks();
+      break;
+    case 'editor':
+      document.getElementById('page-editor').classList.add('active');
+      state.currentWorkId = p.id || null;
+      initEditor(state.currentWorkId);
+      break;
+    case 'ideas':
+      document.getElementById('page-ideas').classList.add('active');
+      renderIdeas();
+      break;
+    case 'idea-editor':
+      document.getElementById('page-idea-editor').classList.add('active');
+      state.currentIdeaId = p.id || null;
+      initIdeaEditor(state.currentIdeaId);
+      break;
+    default:
+      document.getElementById('page-home').classList.add('active');
+      renderHome();
+  }
+}
+
+window.addEventListener('hashchange', router);
+
+// ============================================================
+// HELPERS
+// ============================================================
+function countChars(text) {
+  if (!text) return 0;
+  // Count all non-whitespace characters (standard for Chinese word count)
+  return text.replace(/\s/g, '').length;
+}
+
+function formatTime(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+function formatTimeShort(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  if (h > 0) return h + 'h ' + m + 'm';
+  return m + 'm ' + (totalSec % 60) + 's';
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return '刚刚';
+  if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前';
+  if (diff < 172800000) return '昨天';
+  return (d.getMonth() + 1) + '/' + d.getDate();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+let modalCallback = null;
+
+function showModal(title, text, cb) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-text').textContent = text;
+  document.getElementById('modal-overlay').classList.add('show');
+  modalCallback = cb;
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  modalCallback = null;
+}
+
+document.getElementById('modal-confirm').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.remove('show');
+  if (modalCallback) modalCallback();
+  modalCallback = null;
+});
+
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ============================================================
+// HOME PAGE
+// ============================================================
+function renderHome() {
+  const works = DB.getWorks();
+  const novels = works.filter(w => w.type === 'novel');
+  const ideas = works.filter(w => w.type === 'idea');
+
+  const totalWords = works.reduce((sum, w) => sum + countChars(w.content || ''), 0);
+  const totalTime = works.reduce((sum, w) => sum + (w.totalWritingTimeMs || 0), 0);
+
+  document.getElementById('home-stats').innerHTML = `
+    <div class="stat-item" onclick="navigate('works')">
+      <div class="si-value">${totalWords.toLocaleString()}</div>
+      <div class="si-label">字数</div>
+    </div>
+    <div class="stat-item" onclick="navigate('works')">
+      <div class="si-value">${formatTimeShort(totalTime)}</div>
+      <div class="si-label">时长</div>
+    </div>
+    <div class="stat-item" onclick="navigate('works')">
+      <div class="si-value">${novels.length}</div>
+      <div class="si-label">作品</div>
+    </div>
+    <div class="stat-item" onclick="navigate('ideas')">
+      <div class="si-value">${ideas.length}</div>
+      <div class="si-label">灵感</div>
+    </div>
+  `;
+
+  // Recent items
+  const allItems = [...works].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  const recent = allItems.slice(0, 5);
+
+  const recentEl = document.getElementById('home-recent');
+  if (recent.length === 0) {
+    recentEl.innerHTML = '<div class="empty-state" style="padding:32px 20px"><div class="empty-icon">-</div><div class="empty-text">还没有作品，开始写吧</div></div>';
+  } else {
+    recentEl.innerHTML = recent.map(w => {
+      const typeLabel = w.type === 'novel' ? '小说' : '灵感';
+      const wordCount = countChars(w.content || '');
+      return `<div class="recent-item" onclick="${w.type === 'novel' ? `navigate('editor','id=${w.id}')` : `navigate('idea-editor','id=${w.id}')`}">
+        <div>
+          <div class="ri-title">${escapeHtml(w.title || '未命名')}</div>
+          <div class="ri-meta">${typeLabel} · ${wordCount} 字</div>
+        </div>
+        <div class="ri-meta">${formatDate(w.updatedAt)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Render theme dots
+  renderThemeDots();
+}
+
+// ============================================================
+// WORKS PAGE
+// ============================================================
+function renderWorks() {
+  const works = DB.getWorks();
+  let filtered = works.filter(w => w.type === 'novel');
+  if (state.worksFilter === 'idea') filtered = works.filter(w => w.type === 'idea');
+  if (state.worksFilter === 'all') filtered = works;
+
+  filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+  const grid = document.getElementById('works-grid');
+
+  // Update filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active-filter', btn.dataset.filter === state.worksFilter);
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">-</div><div class="empty-text">这里还没有内容</div></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(w => {
+    const typeLabel = w.type === 'novel' ? '· 小说' : '· 灵感';
+    const wordCount = countChars(w.content || '');
+    return `<div class="card" onclick="navigate('${w.type === 'novel' ? 'editor' : 'idea-editor'}','id=${w.id}')">
+      <button class="card-delete" onclick="event.stopPropagation();confirmDeleteWork('${w.id}')">×</button>
+      <div class="card-title">${escapeHtml(w.title || '未命名')}</div>
+      <div class="card-type">${typeLabel}</div>
+      <div class="card-meta">${wordCount} 字 · ${formatDate(w.updatedAt)}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterWorks(filter) {
+  state.worksFilter = filter;
+  renderWorks();
+}
+
+function confirmDeleteWork(id) {
+  showModal('删除作品', '确定要删除这个作品吗？删除后无法恢复。', () => {
+    let works = DB.getWorks();
+    works = works.filter(w => w.id !== id);
+    DB.saveWorks(works);
+    renderWorks();
+    renderHome();
+  });
+}
+
+// ============================================================
+// EDITOR
+// ============================================================
+function initEditor(id) {
+  const titleInput = document.getElementById('editor-title');
+  const contentArea = document.getElementById('editor-content');
+  const saveStatus = document.getElementById('editor-save-status');
+  const lastSaved = document.getElementById('editor-last-saved');
+  const wordCount = document.getElementById('editor-wordcount');
+
+  // Load settings
+  const settings = DB.getSettings();
+  contentArea.style.fontSize = settings.fontSize + 'px';
+  document.getElementById('font-size-slider').value = settings.fontSize;
+  document.getElementById('font-size-label').textContent = settings.fontSize;
+
+  let work;
+  if (id) {
+    const works = DB.getWorks();
+    work = works.find(w => w.id === id);
+  }
+
+  if (work) {
+    titleInput.value = work.title || '';
+    contentArea.value = work.content || '';
+    state.timerAccumulated = work.totalWritingTimeMs || 0;
+    saveStatus.textContent = '✓ 已保存';
+    lastSaved.textContent = '最后保存：' + formatDate(work.updatedAt);
+  } else {
+    // Create new work
+    work = {
+      id: DB.genId(),
+      title: '',
+      type: 'novel',
+      content: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      totalWritingTimeMs: 0,
+    };
+    const works = DB.getWorks();
+    works.push(work);
+    DB.saveWorks(works);
+    state.currentWorkId = work.id;
+    titleInput.value = '';
+    contentArea.value = '';
+    state.timerAccumulated = 0;
+    saveStatus.textContent = '新作品';
+    lastSaved.textContent = '';
+  }
+
+  state.lastContent = contentArea.value;
+  updateWordCount();
+
+  // Start timer
+  startTimer();
+
+  // Auto-save handler
+  contentArea.oninput = () => {
+    updateWordCount();
+    scheduleAutoSave();
+  };
+
+  titleInput.oninput = () => {
+    scheduleAutoSave();
+  };
+
+  // Font size slider
+  document.getElementById('font-size-slider').oninput = function() {
+    const size = parseInt(this.value);
+    contentArea.style.fontSize = size + 'px';
+    document.getElementById('font-size-label').textContent = size;
+    const s = DB.getSettings();
+    s.fontSize = size;
+    DB.saveSettings(s);
+  };
+
+  // Keyboard shortcut: Ctrl+S to save
+  contentArea.onkeydown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      saveCurrentWork();
+    }
+  };
+
+  // Focus content area
+  setTimeout(() => contentArea.focus(), 100);
+}
+
+function updateWordCount() {
+  const content = document.getElementById('editor-content').value;
+  document.getElementById('editor-wordcount').textContent = countChars(content).toLocaleString() + ' 字';
+}
+
+function scheduleAutoSave() {
+  const status = document.getElementById('editor-save-status');
+  status.textContent = '保存中...';
+  if (state.saveTimeout) clearTimeout(state.saveTimeout);
+  state.saveTimeout = setTimeout(saveCurrentWork, 1500);
+}
+
+function saveCurrentWork() {
+  const id = state.currentWorkId;
+  if (!id) return;
+
+  const works = DB.getWorks();
+  const work = works.find(w => w.id === id);
+  if (!work) return;
+
+  const title = document.getElementById('editor-title').value.trim();
+  const content = document.getElementById('editor-content').value;
+
+  work.title = title || '未命名';
+  work.content = content;
+  work.updatedAt = new Date().toISOString();
+  work.totalWritingTimeMs = state.timerAccumulated + (state.timerStartTime ? Date.now() - state.timerStartTime : 0);
+
+  DB.saveWorks(works);
+
+  const status = document.getElementById('editor-save-status');
+  status.textContent = '✓ 已保存';
+  document.getElementById('editor-last-saved').textContent = '最后保存：刚刚';
+  state.lastContent = content;
+}
+
+function exportWork() {
+  const id = state.currentWorkId;
+  if (!id) return;
+  const works = DB.getWorks();
+  const work = works.find(w => w.id === id);
+  if (!work) return;
+
+  const title = work.title || '未命名';
+  const content = work.content || '';
+  const wordCount = countChars(content);
+  const time = formatTimeShort(work.totalWritingTimeMs || 0);
+
+  // Generate Word-compatible HTML
+  const htmlContent = content.replace(/\n/g, '<br>').replace(/\s{2}/g, '&nbsp;&nbsp;');
+  const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
+<style>body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:12pt;line-height:1.8;padding:40px;max-width:600px;margin:0 auto;}
+h1{font-size:18pt;text-align:center;margin-bottom:30px;font-weight:600;}
+.meta{text-align:center;font-size:9pt;color:#888;margin-bottom:40px;}
+p{margin:0 0 8px 0;text-indent:2em;}
+</style></head>
+<body>
+<h1>${escapeHtml(title)}</h1>
+<div class="meta">${wordCount} 字 · 写作时长 ${time}</div>
+${htmlContent.split('<br>').map(p => '<p>' + p + '</p>').join('\n')}
+</body></html>`;
+
+  const blob = new Blob(['﻿' + html], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = title + '.doc';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function deleteCurrentWork() {
+  const id = state.currentWorkId;
+  if (!id) return;
+  showModal('删除作品', '确定要删除这个作品吗？', () => {
+    let works = DB.getWorks();
+    works = works.filter(w => w.id !== id);
+    DB.saveWorks(works);
+    navigate('works');
+  });
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer() {
+  if (state.timerInterval) return;
+  state.timerStartTime = Date.now();
+  state.timerInterval = setInterval(() => {
+    const elapsed = state.timerAccumulated + (Date.now() - state.timerStartTime);
+    document.getElementById('editor-timer').textContent = formatTime(elapsed);
+    // Auto-save timer progress every 10 seconds
+    if (Math.floor(elapsed / 10000) > Math.floor((elapsed - 1000) / 10000)) {
+      // Only update the saved time, don't do a full save every 10s
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (!state.timerInterval) return;
+
+  // Save accumulated time + latest content
+  if (state.currentWorkId && state.timerStartTime) {
+    const works = DB.getWorks();
+    const work = works.find(w => w.id === state.currentWorkId);
+    if (work) {
+      work.totalWritingTimeMs = state.timerAccumulated + (Date.now() - state.timerStartTime);
+      work.updatedAt = new Date().toISOString();
+      // Save latest content
+      const titleEl = document.getElementById('editor-title');
+      const contentEl = document.getElementById('editor-content');
+      if (titleEl) work.title = titleEl.value.trim() || '未命名';
+      if (contentEl) work.content = contentEl.value;
+      DB.saveWorks(works);
+    }
+  }
+
+  clearInterval(state.timerInterval);
+  state.timerInterval = null;
+  state.timerStartTime = null;
+  state.timerAccumulated = 0;
+  // Clear any pending save timeout
+  if (state.saveTimeout) {
+    clearTimeout(state.saveTimeout);
+    state.saveTimeout = null;
+  }
+}
+
+// ============================================================
+// IDEAS PAGE
+// ============================================================
+function renderIdeas() {
+  const works = DB.getWorks();
+  const ideas = works.filter(w => w.type === 'idea').sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+  const grid = document.getElementById('ideas-grid');
+  if (ideas.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">*</div><div class="empty-text">还没有灵感，记一个吧</div></div>';
+    return;
+  }
+
+  grid.innerHTML = ideas.map(w => {
+    const excerpt = (w.content || '').slice(0, 60) + ((w.content || '').length > 60 ? '...' : '');
+    return `<div class="card" onclick="navigate('idea-editor','id=${w.id}')">
+      <button class="card-delete" onclick="event.stopPropagation();confirmDeleteIdea('${w.id}')">×</button>
+      <div class="card-title">${escapeHtml(w.title || '未命名灵感')}</div>
+      <div class="card-excerpt">${escapeHtml(excerpt) || '暂无内容'}</div>
+      <div class="card-meta" style="margin-top:8px;">${formatDate(w.updatedAt)}</div>
+    </div>`;
+  }).join('');
+}
+
+function confirmDeleteIdea(id) {
+  showModal('删除灵感', '确定要删除这个灵感吗？', () => {
+    let works = DB.getWorks();
+    works = works.filter(w => w.id !== id);
+    DB.saveWorks(works);
+    renderIdeas();
+    renderHome();
+  });
+}
+
+// ============================================================
+// IDEA EDITOR
+// ============================================================
+function initIdeaEditor(id) {
+  const titleInput = document.getElementById('idea-editor-title');
+  const contentArea = document.getElementById('idea-editor-content');
+
+  if (id) {
+    const works = DB.getWorks();
+    const idea = works.find(w => w.id === id);
+    if (idea) {
+      titleInput.value = idea.title || '';
+      contentArea.value = idea.content || '';
+      return;
+    }
+  }
+
+  // New idea
+  const idea = {
+    id: DB.genId(),
+    title: '',
+    type: 'idea',
+    content: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    totalWritingTimeMs: 0,
+  };
+  const works = DB.getWorks();
+  works.push(idea);
+  DB.saveWorks(works);
+  state.currentIdeaId = idea.id;
+  titleInput.value = '';
+  contentArea.value = '';
+  setTimeout(() => contentArea.focus(), 100);
+}
+
+function saveIdeaEdit() {
+  const id = state.currentIdeaId;
+  if (!id) return;
+  const works = DB.getWorks();
+  const idea = works.find(w => w.id === id);
+  if (!idea) return;
+
+  idea.title = document.getElementById('idea-editor-title').value.trim() || '未命名灵感';
+  idea.content = document.getElementById('idea-editor-content').value;
+  idea.updatedAt = new Date().toISOString();
+
+  DB.saveWorks(works);
+  navigate('ideas');
+}
+
+function deleteCurrentIdea() {
+  const id = state.currentIdeaId;
+  if (!id) return;
+  showModal('删除灵感', '确定要删除这个灵感吗？', () => {
+    let works = DB.getWorks();
+    works = works.filter(w => w.id !== id);
+    DB.saveWorks(works);
+    navigate('ideas');
+  });
+}
+
+// ============================================================
+// CREATE SHORTCUTS
+// ============================================================
+function createNewWork() {
+  // Create a blank work and navigate to editor
+  const works = DB.getWorks();
+  const work = {
+    id: DB.genId(),
+    title: '',
+    type: 'novel',
+    content: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    totalWritingTimeMs: 0,
+  };
+  works.push(work);
+  DB.saveWorks(works);
+  navigate('editor', 'id=' + work.id);
+}
+
+function createNewIdea() {
+  const works = DB.getWorks();
+  const idea = {
+    id: DB.genId(),
+    title: '',
+    type: 'idea',
+    content: '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    totalWritingTimeMs: 0,
+  };
+  works.push(idea);
+  DB.saveWorks(works);
+  navigate('idea-editor', 'id=' + idea.id);
+}
+
+// ============================================================
+// KEYBOARD SHORTCUTS (global)
+// ============================================================
+document.addEventListener('keydown', (e) => {
+  // Escape to close modal
+  if (e.key === 'Escape') closeModal();
+});
+
+// ============================================================
+// ADDITIONAL STYLES FOR FILTER BTNS
+// ============================================================
+const styleExtra = document.createElement('style');
+styleExtra.textContent = `
+  .filter-btn { background: transparent; border-color: transparent; color: var(--text-secondary); }
+  .filter-btn:hover { border-color: var(--border); background: var(--surface); }
+  .filter-btn.active-filter { background: var(--surface); border-color: var(--accent); color: var(--text); }
+`;
+document.head.appendChild(styleExtra);
+
+// ============================================================
+// SAVE ON BEFOREUNLOAD
+// ============================================================
+window.addEventListener('beforeunload', () => {
+  // Save current work if editing
+  if (state.currentWorkId) {
+    const works = DB.getWorks();
+    const work = works.find(w => w.id === state.currentWorkId);
+    if (work) {
+      const title = document.getElementById('editor-title')?.value;
+      const content = document.getElementById('editor-content')?.value;
+      if (title !== undefined) work.title = title.trim() || '未命名';
+      if (content !== undefined) work.content = content;
+      work.updatedAt = new Date().toISOString();
+      work.totalWritingTimeMs = state.timerAccumulated + (state.timerStartTime ? Date.now() - state.timerStartTime : 0);
+      DB.saveWorks(works);
+    }
+  }
+  // Save idea if editing
+  if (state.currentIdeaId && document.getElementById('page-idea-editor').classList.contains('active')) {
+    const works = DB.getWorks();
+    const idea = works.find(w => w.id === state.currentIdeaId);
+    if (idea) {
+      idea.title = document.getElementById('idea-editor-title')?.value.trim() || '未命名灵感';
+      idea.content = document.getElementById('idea-editor-content')?.value || '';
+      idea.updatedAt = new Date().toISOString();
+      DB.saveWorks(works);
+    }
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+// Apply saved theme
+setTheme(getTheme());
+router();
+</script>
+</body>
+</html>

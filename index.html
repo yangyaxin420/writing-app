@@ -387,25 +387,25 @@ input[type="range"]::-moz-range-thumb {
 .tab-panel.active { display: block; animation: fadeIn .25s ease; }
 
 /* 组合抽签 */
-.draw-cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.draw-cats { display: flex; flex-wrap: nowrap; justify-content: center; gap: 6px; margin: 12px 0 8px; }
 .cat-chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
-  background: var(--surface); color: var(--text-secondary); font-size: .82rem; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); font-size: .78rem; cursor: pointer;
   transition: all var(--transition); font-family: inherit;
 }
 .cat-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); font-weight: 600; }
 .combo-card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 20px 14px; margin: 18px 0; transition: all var(--transition);
-  display: flex; align-items: center; justify-content: center;
+  padding: 18px 16px; margin: 14px 0; transition: all var(--transition);
 }
-.combo-line {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-  gap: 4px 9px; font-size: 1.1rem; font-weight: 600; line-height: 1.5; text-align: center;
+.combo-card .cc-row {
+  display: flex; align-items: baseline; gap: 12px; padding: 6px 0;
+  border-bottom: 1px dashed var(--border-light);
 }
-.combo-word { cursor: pointer; white-space: nowrap; }
-.combo-x { color: var(--text-tertiary); font-weight: 400; font-size: .85em; }
+.combo-card .cc-row:last-child { border-bottom: none; }
+.combo-card .cc-cat { font-size: .72rem; color: var(--text-tertiary); width: 56px; flex-shrink: 0; letter-spacing: .06em; }
+.combo-card .cc-word { font-size: 1.05rem; font-weight: 600; }
 .combo-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
 
 /* 对决 */
@@ -481,9 +481,11 @@ input[type="range"]::-moz-range-thumb {
   .editor-textarea { padding: 14px; min-height: calc(100vh - 340px); }
   .quick-actions { flex-direction: column; }
   .quick-actions .btn { padding: 10px; }
-  header { flex-wrap: wrap; row-gap: 4px; }
+  header { gap: 8px; }
   header .actions { gap: 4px; }
-  header .theme-dots { order: 10; width: 100%; justify-content: center; }
+  header .title { gap: 8px; }
+  header .theme-dots { gap: 3px; }
+  header .theme-dot { width: 12px; height: 12px; }
 }
 
 /* PWA standalone mode */
@@ -505,9 +507,11 @@ input[type="range"]::-moz-range-thumb {
   <!-- ===== HOME ===== -->
   <section id="page-home" class="page active">
     <header>
-      <div class="title">笔间</div>
-      <div class="actions" style="gap:6px;">
+      <div class="title" style="display:inline-flex;align-items:center;gap:10px;">
+        笔间
         <div class="theme-dots" id="theme-dots"></div>
+      </div>
+      <div class="actions" style="gap:6px;">
         <button class="btn btn-sm btn-ghost" onclick="navigate('works')">作品</button>
         <button class="btn btn-sm btn-ghost" onclick="navigate('ideas')">灵感</button>
         <button class="btn btn-sm btn-ghost" onclick="navigate('prompts')">文梗</button>
@@ -762,7 +766,7 @@ const CATEGORIES = [
   { key: '形式', words: ['只写对话', '第二人称', '旁观者视角', '开放式结局', 'BE美学', '字数限定', '书信体', '倒叙', '日记体', '反转结局', '第一人称'] },
 ];
 const BUILTIN_TROPES = CATEGORIES.flatMap(c => c.words.map(w => ({ keyword: w, category: c.key })));
-const APP_VERSION = 'v1.1.1 (2026.08.12)';
+const APP_VERSION = 'v1.1.2 (2026.08.12)';
 
 // ============================================================
 // THEME SYSTEM
@@ -1606,12 +1610,12 @@ function redraw() { doDraw(); }
 function renderCombo() {
   const area = document.getElementById('combo-area');
   if (!state.combo) { area.innerHTML = ''; return; }
-  const cats = CATEGORIES.filter(c => state.combo[c.key]);
-  const words = cats.map((c, i) => {
-    const sep = i < cats.length - 1 ? '<span class="combo-x">×</span>' : '';
-    return `<span class="combo-word" title="${escapeHtml(c.key)}">${escapeHtml(state.combo[c.key])}</span>${sep}`;
-  }).join('');
-  area.innerHTML = `<div class="combo-card ${state.comboSelected ? 'selected' : ''}" onclick="selectCombo()"><div class="combo-line">${words}</div></div>`;
+  const rows = CATEGORIES.filter(c => state.combo[c.key]).map(c => `
+    <div class="cc-row">
+      <div class="cc-cat">${c.key}</div>
+      <div class="cc-word">${escapeHtml(state.combo[c.key])}</div>
+    </div>`).join('');
+  area.innerHTML = `<div class="combo-card ${state.comboSelected ? 'selected' : ''}" onclick="selectCombo()">${rows}</div>`;
 }
 
 function selectCombo() {

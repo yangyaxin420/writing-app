@@ -372,6 +372,113 @@ input[type="range"]::-moz-range-thumb {
 .modal p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
 .modal .btn-group { justify-content: flex-end; }
 
+/* ===== 文梗 · 王牌对王牌 ===== */
+.prompts-sub { padding: 16px 0 40px; }
+.tabs { display: flex; gap: 4px; margin: 4px 0 16px; border-bottom: 1px solid var(--border); }
+.tab-btn {
+  flex: 1; padding: 10px 0; background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--text-secondary); font-size: .92rem; cursor: pointer; font-family: inherit;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all var(--transition);
+}
+.tab-btn svg { width: 16px; height: 16px; }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn .25s ease; }
+
+/* 组合抽签 */
+.draw-cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.cat-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-secondary); font-size: .82rem; cursor: pointer;
+  transition: all var(--transition); font-family: inherit;
+}
+.cat-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.combo-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px 20px; margin: 18px 0; transition: all var(--transition);
+}
+.combo-card .cc-row {
+  display: flex; align-items: baseline; gap: 12px; padding: 7px 0;
+  border-bottom: 1px dashed var(--border-light);
+}
+.combo-card .cc-row:last-child { border-bottom: none; }
+.combo-card .cc-cat { font-size: .72rem; color: var(--text-tertiary); width: 56px; flex-shrink: 0; letter-spacing: .06em; }
+.combo-card .cc-word { font-size: 1.05rem; font-weight: 600; }
+.combo-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+
+/* 对决 */
+.vs-stage { text-align: center; }
+.vs-pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; margin: 18px 0; }
+.vs-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 28px 14px; cursor: pointer; position: relative; transition: all .2s;
+}
+.vs-card:hover { border-color: var(--accent); box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+.vs-card .vs-kw { font-size: 1.35rem; font-weight: 700; }
+.vs-card .vs-cat { font-size: .72rem; color: var(--text-tertiary); margin-top: 6px; letter-spacing: .08em; }
+.vs-card.picked { animation: pickedOut .5s ease; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+.vs-card.eliminated { opacity: .35; filter: grayscale(1); }
+.vs-verse { display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+.match-label { font-size: .82rem; color: var(--text-secondary); letter-spacing: .08em; }
+.battle-tag { position: absolute; top: 8px; right: 10px; font-size: .68rem; letter-spacing: .1em; }
+.vs-card.picked .battle-tag { color: var(--accent); font-weight: 700; }
+.vs-card.eliminated .battle-tag { color: var(--text-tertiary); font-style: italic; }
+.bracket { display: flex; gap: 16px; justify-content: center; margin: 20px 0 24px; flex-wrap: wrap; }
+.lantern {
+  width: 74px; padding: 6px 4px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); color: var(--text-tertiary); font-size: .7rem; text-align: center; transition: all .3s;
+}
+.lantern.lit { border-color: var(--accent); color: var(--text); box-shadow: 0 2px 8px var(--accent-light); }
+.lantern.champion { animation: pulse 1.2s infinite; border-color: var(--accent); background: var(--accent-light); font-weight: 700; }
+.champ-icon { width: 52px; height: 52px; margin: 0 auto 12px; color: var(--accent); animation: crownPop .5s ease; }
+.champ-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+.champ-sub { font-size: .82rem; color: var(--text-secondary); margin-bottom: 20px; }
+
+@keyframes pickedOut { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes crownPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+/* 题库 */
+.pool-section-title { display: flex; justify-content: space-between; align-items: center; margin: 18px 0 10px; }
+.pool-section-title h3 { font-size: .92rem; color: var(--text-secondary); font-weight: 600; }
+.pool-item {
+  display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface);
+  margin-bottom: 8px; transition: all var(--transition);
+}
+.pool-item .pi-kw { font-weight: 600; flex: 1; }
+.pool-item .pi-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.pool-item .pi-hidden-kw { opacity: .4; text-decoration: line-through; }
+.tag {
+  display: inline-block; font-size: .66rem; padding: 2px 8px; border-radius: 10px;
+  background: var(--surface-alt); color: var(--text-secondary); border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tag.custom { color: var(--accent); border-color: var(--accent-light); background: var(--accent-light); }
+.pool-search { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: .88rem; font-family: inherit; background: var(--surface); color: var(--text); outline: none; margin-bottom: 14px; }
+.pool-search:focus { border-color: var(--accent); }
+
+/* 收藏 */
+.collected-stats { display: flex; gap: 14px; padding: 12px 14px; margin-bottom: 14px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: .82rem; color: var(--text-secondary); }
+.collected-stats b { color: var(--text); }
+.collected-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 10px; transition: all var(--transition);
+}
+.collected-card .cc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.collected-card .cc-title { font-weight: 600; flex: 1; }
+.collected-card .cc-title.written { text-decoration: line-through; color: var(--text-secondary); }
+.collected-card .cc-meta { font-size: .75rem; color: var(--text-tertiary); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.collected-card .cc-note { font-size: .82rem; color: var(--text-secondary); margin-top: 6px; font-style: italic; }
+.collected-card .cc-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+.app-footer { margin-top: 48px; padding: 16px; text-align: center; font-size: .75rem; color: var(--text-tertiary); }
+
 /* ===== Responsive ===== */
 @media (max-width: 520px) {
   #app { padding: 0 16px; }
@@ -416,11 +523,13 @@ input[type="range"]::-moz-range-thumb {
     <div class="quick-actions">
       <button class="btn btn-primary" onclick="createNewWork()">+ 新作品</button>
       <button class="btn" onclick="createNewIdea()">* 记灵感</button>
+      <button class="btn" onclick="navigate('prompts')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/></svg> 文梗</button>
       <button class="btn btn-sm install-btn" id="install-btn" style="display:none;" onclick="installApp()">↓ 安装</button>
     </div>
 
     <div class="section-header"><h2>最近更新</h2></div>
     <div class="recent-list" id="home-recent"></div>
+    <footer class="app-footer" id="app-version"></footer>
   </section>
 
   <!-- ===== WORKS ===== -->
@@ -504,6 +613,105 @@ input[type="range"]::-moz-range-thumb {
     </div>
   </section>
 
+  <!-- ===== 文梗 · 王牌对王牌 ===== -->
+  <section id="page-prompts" class="page">
+    <header>
+      <button class="back" onclick="navigate('home')">← 返回</button>
+      <div class="title">文梗</div>
+      <div class="actions">
+        <span class="editor-save-status" id="prompts-count"></span>
+      </div>
+    </header>
+
+    <nav class="tabs" id="prompts-tabs">
+      <button class="tab-btn active" data-tab="draw" onclick="setPromptsTab('draw')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/></svg>抽签
+      </button>
+      <button class="tab-btn" data-tab="battle" onclick="setPromptsTab('battle')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>对决
+      </button>
+      <button class="tab-btn" data-tab="pool" onclick="setPromptsTab('pool')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>题库
+      </button>
+      <button class="tab-btn" data-tab="collected" onclick="setPromptsTab('collected')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 3l2.7 5.5 6 .9-4.3 4.2 1 6-5.4-2.9-5.4 2.9 1-6L3.3 9.4l6-.9z"/></svg>收藏
+      </button>
+    </nav>
+
+    <div class="prompts-sub">
+      <!-- 抽签 -->
+      <div class="tab-panel active" data-panel="draw">
+        <div class="draw-cats" id="draw-cats"></div>
+        <div class="btn-group" style="justify-content:center;">
+          <button class="btn btn-primary" id="btn-draw" onclick="doDraw()">抽一题</button>
+          <button class="btn" id="btn-redraw" style="display:none;" onclick="redraw()">换一批</button>
+        </div>
+        <div id="combo-area"></div>
+        <div class="btn-group" id="draw-actions" style="display:none;justify-content:center;margin-top:14px;">
+          <button class="btn btn-primary" onclick="writeFromCombo()">开写</button>
+          <button class="btn" onclick="collectCombo()">收藏这道题</button>
+        </div>
+      </div>
+
+      <!-- 对决 -->
+      <div class="tab-panel" data-panel="battle">
+        <div id="battle-root"></div>
+      </div>
+
+      <!-- 题库 -->
+      <div class="tab-panel" data-panel="pool">
+        <div class="btn-group" style="margin-bottom:14px;">
+          <button class="btn btn-primary btn-sm" onclick="openPromptEditor()">+ 新增文梗</button>
+          <button class="btn btn-sm" onclick="toggleShowHidden()" id="btn-show-hidden">显示已隐藏</button>
+        </div>
+        <input class="pool-search" id="pool-search" placeholder="搜关键词" oninput="renderPool()">
+        <div id="pool-list"></div>
+      </div>
+
+      <!-- 收藏 -->
+      <div class="tab-panel" data-panel="collected">
+        <div class="collected-stats" id="collected-stats"></div>
+        <div style="display:flex;gap:6px;margin-bottom:14px;">
+          <button class="btn btn-sm filter-btn active-filter" data-f="all" onclick="setCollectedFilter('all')">全部</button>
+          <button class="btn btn-sm filter-btn" data-f="unwritten" onclick="setCollectedFilter('unwritten')">未写</button>
+          <button class="btn btn-sm filter-btn" data-f="written" onclick="setCollectedFilter('written')">已写</button>
+        </div>
+        <div id="collected-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 文梗编辑弹窗 ===== -->
+  <div class="modal-overlay" id="prompt-modal-overlay">
+    <div class="modal">
+      <h3 id="prompt-modal-title">新增文梗</h3>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:.78rem;color:var(--text-secondary);margin-bottom:6px;">关键词</div>
+        <input class="pool-search" id="prompt-keyword" placeholder="如：破镜重圆" style="margin-bottom:0;">
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:.78rem;color:var(--text-secondary);margin-bottom:6px;">维度</div>
+        <select class="pool-search" id="prompt-category" style="margin-bottom:0;"></select>
+      </div>
+      <div class="btn-group">
+        <button class="btn" onclick="closePromptModal()">取消</button>
+        <button class="btn btn-primary" onclick="savePrompt()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 收藏备注弹窗 ===== -->
+  <div class="modal-overlay" id="note-modal-overlay">
+    <div class="modal">
+      <h3>备注</h3>
+      <textarea class="pool-search" id="note-input" rows="3" placeholder="记一句想怎么写……" style="margin-bottom:20px;resize:vertical;"></textarea>
+      <div class="btn-group">
+        <button class="btn" onclick="closeNoteModal()">取消</button>
+        <button class="btn btn-primary" onclick="saveCollectedNote()">保存</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== Modal ===== -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
@@ -535,10 +743,31 @@ const DB = {
   saveSettings(s) {
     localStorage.setItem('writing_settings', JSON.stringify(s));
   },
+  getPrompts() { try { return JSON.parse(localStorage.getItem('writing_prompts_custom') || '[]'); } catch { return []; } },
+  savePrompts(a) { localStorage.setItem('writing_prompts_custom', JSON.stringify(a)); },
+  getHidden() { try { return JSON.parse(localStorage.getItem('writing_prompts_hidden') || '[]'); } catch { return []; } },
+  saveHidden(a) { localStorage.setItem('writing_prompts_hidden', JSON.stringify(a)); },
+  getCollected() { try { return JSON.parse(localStorage.getItem('writing_collected') || '[]'); } catch { return []; } },
+  saveCollected(a) { localStorage.setItem('writing_collected', JSON.stringify(a)); },
+  getMeta() { try { return JSON.parse(localStorage.getItem('writing_meta') || 'null'); } catch { return null; } },
+  saveMeta(m) { localStorage.setItem('writing_meta', JSON.stringify(m)); },
   genId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
 };
+
+// ============================================================
+// 文梗题库
+// ============================================================
+const CATEGORIES = [
+  { key: '世界观', words: ['都市', '校园', '古风', '民国', '星际', '末世', '修真', '西幻', '宫廷', '江湖', '娱乐圈', '电竞', '童话', '海洋', '乡村', '古代', '神鬼', '苗疆'] },
+  { key: '人物关系', words: ['青梅竹马', '欢喜冤家', '宿敌', '死对头', '姐弟恋', '兄妹', '网友奔现', '笔友', '邻居', '合租', '替身', '白月光', '双向暗恋', '单向暗恋', '上司下属', '师徒', '伪骨科', '养成系', '年上', '年下', '仇人子女'] },
+  { key: '设定', words: ['失忆', '重生', '穿越', '平行时空', '系统', '读心术', '非人恋', '灵魂互换', '哑巴恋人', '盲眼', '病弱', '卧底', '双面人生', '古穿今', '黑化', '穿书', '快穿', '金手指', '契约婚姻', '先婚后爱'] },
+  { key: '情节', words: ['破镜重圆', '久别重逢', '追妻火葬场', '救赎', '双向奔赴', '一见钟情', '十年之约', '分手旅行', '假戏真做', '伪装情侣', '婚约', '破冰', 'he改be', 'be改he', '破镜难圆', '复合'] },
+  { key: '形式', words: ['只写对话', '第二人称', '旁观者视角', '开放式结局', 'BE美学', '字数限定', '书信体', '倒叙', '日记体', '反转结局', '第一人称'] },
+];
+const BUILTIN_TROPES = CATEGORIES.flatMap(c => c.words.map(w => ({ keyword: w, category: c.key })));
+const APP_VERSION = 'v1.1.0 (2026.08.12)';
 
 // ============================================================
 // THEME SYSTEM
@@ -597,6 +826,16 @@ let state = {
   timerAccumulated: 0,
   saveTimeout: null,
   lastContent: '',
+  // 文梗
+  promptsTab: 'draw',     // draw | battle | pool | collected
+  drawCats: null,         // {世界观:true, ...}
+  combo: null,            // 最近组合题 {维度:词}
+  comboSelected: false,
+  battle: null,           // 对决状态
+  showHidden: false,
+  collectedFilter: 'all',
+  poolSearch: '',
+  editingPromptId: null,
 };
 
 // ============================================================
@@ -655,6 +894,11 @@ function router() {
       state.currentIdeaId = p.id || null;
       initIdeaEditor(state.currentIdeaId);
       break;
+    case 'prompts':
+      document.getElementById('page-prompts').classList.add('active');
+      if (p.tab && ['draw', 'battle', 'pool', 'collected'].includes(p.tab)) state.promptsTab = p.tab;
+      renderPromptsPage();
+      break;
     default:
       document.getElementById('page-home').classList.add('active');
       renderHome();
@@ -704,6 +948,55 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+// ============================================================
+// 文梗 · 工具
+// ============================================================
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandomN(pool, n) {
+  if (!pool || pool.length === 0) return [];
+  return shuffle(pool).slice(0, Math.min(n, pool.length));
+}
+
+// 运行时合并：内置(过滤隐藏) + 自定义；每个词都有稳定 id（对决晋级判断依赖它）
+function getAllPrompts() {
+  const hidden = DB.getHidden();
+  const builtins = BUILTIN_TROPES
+    .filter(p => !hidden.includes(p.keyword))
+    .map(p => ({ id: 'b_' + p.keyword, ...p, source: 'builtin' }));
+  const customs = DB.getPrompts()
+    .filter(p => !hidden.includes(p.keyword))
+    .map(p => ({ ...p, source: 'custom' }));
+  return [...builtins, ...customs];
+}
+
+function getPromptsByCategory(cat) {
+  return getAllPrompts().filter(p => p.category === cat);
+}
+
+function normalizeCollected(c) {
+  return Object.assign({ id: '', title: '', combo: null, keyword: '', source: 'draw', champion: false, note: '', written: false, writtenAt: null, createdAt: new Date().toISOString() }, c);
+}
+
+function migrateData() {
+  let meta = DB.getMeta();
+  if (!meta || typeof meta.schemaVersion !== 'number') meta = { schemaVersion: 0 };
+  if (meta.schemaVersion < 1) {
+    if (!Array.isArray(DB.getPrompts())) DB.savePrompts([]);
+    if (!Array.isArray(DB.getHidden())) DB.saveHidden([]);
+    if (!Array.isArray(DB.getCollected())) DB.saveCollected(DB.getCollected().map(normalizeCollected));
+    meta.schemaVersion = 1;
+  }
+  DB.saveMeta(meta);
 }
 
 // ============================================================
@@ -1200,6 +1493,540 @@ function createNewIdea() {
 }
 
 // ============================================================
+// 文梗（抽签 / 对决 / 题库 / 收藏）
+// ============================================================
+const crownSvg = '<svg class="champ-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 18h18M5 9l4 3 3-7 3 7 4-3-1 9H6z"/></svg>';
+
+function toast(msg) {
+  let el = document.getElementById('app-toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'app-toast';
+    el.style.cssText = 'position:fixed;left:50%;bottom:60px;transform:translateX(-50%);background:rgba(29,29,31,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:.82rem;z-index:300;transition:opacity .3s;pointer-events:none;max-width:80vw;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.opacity = '0'; }, 1800);
+}
+
+function createWorkFromPrompt(title, intro) {
+  const works = DB.getWorks();
+  const work = {
+    id: DB.genId(),
+    title: title || '未命名',
+    type: 'novel',
+    content: intro ? `梗 · ${intro}\n\n` : '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    totalWritingTimeMs: 0,
+  };
+  works.push(work);
+  DB.saveWorks(works);
+  navigate('editor', 'id=' + work.id);
+}
+
+function collectItem(entry) {
+  const collected = DB.getCollected();
+  collected.unshift(normalizeCollected({
+    id: DB.genId(),
+    title: entry.title || entry.keyword || '未命名',
+    combo: entry.combo || null,
+    keyword: entry.keyword || null,
+    source: entry.source || 'draw',
+    champion: !!entry.champion,
+    createdAt: new Date().toISOString(),
+  }));
+  DB.saveCollected(collected);
+  toast('已加入收藏');
+}
+
+// ---------- 页面与 Tab ----------
+function renderPromptsPage() {
+  document.getElementById('prompts-count').textContent = '题库 ' + getAllPrompts().length;
+  document.querySelectorAll('#prompts-tabs .tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === state.promptsTab);
+  });
+  document.querySelectorAll('#page-prompts .tab-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.dataset.panel === state.promptsTab);
+  });
+  if (state.promptsTab === 'draw') renderDrawPanel();
+  else if (state.promptsTab === 'battle') renderBattle();
+  else if (state.promptsTab === 'pool') renderPool();
+  else if (state.promptsTab === 'collected') renderCollected();
+}
+
+function setPromptsTab(tab) {
+  state.promptsTab = tab;
+  renderPromptsPage();
+}
+
+// ---------- 抽签（组合抽） ----------
+function renderDrawPanel() {
+  if (!state.drawCats) {
+    state.drawCats = {};
+    CATEGORIES.forEach(c => state.drawCats[c.key] = true);
+  }
+  renderDrawCats();
+  if (state.combo) renderCombo();
+  updateDrawActions();
+}
+
+function renderDrawCats() {
+  const el = document.getElementById('draw-cats');
+  el.innerHTML = CATEGORIES.map(c => {
+    const on = state.drawCats[c.key];
+    return `<button class="cat-chip ${on ? 'active' : ''}" onclick="toggleDrawCat('${c.key}')">${c.key}</button>`;
+  }).join('');
+}
+
+function toggleDrawCat(cat) {
+  state.drawCats[cat] = !state.drawCats[cat];
+  if (!Object.values(state.drawCats).some(Boolean)) state.drawCats[cat] = true;
+  renderDrawCats();
+  state.combo = null;
+  state.comboSelected = false;
+  renderCombo();
+  updateDrawActions();
+}
+
+function doDraw() {
+  const cats = CATEGORIES.filter(c => state.drawCats[c.key]);
+  if (cats.length === 0) { toast('先勾选至少一个维度'); return; }
+  const combo = {};
+  cats.forEach(c => {
+    const pool = getPromptsByCategory(c.key);
+    if (pool.length > 0) combo[c.key] = pickRandomN(pool, 1)[0].keyword;
+  });
+  if (Object.keys(combo).length === 0) { toast('题库空了，先去题库加几个文梗'); return; }
+  state.combo = combo;
+  state.comboSelected = false;
+  renderCombo();
+  updateDrawActions();
+}
+
+function redraw() { doDraw(); }
+
+function renderCombo() {
+  const area = document.getElementById('combo-area');
+  if (!state.combo) { area.innerHTML = ''; return; }
+  const rows = CATEGORIES.filter(c => state.combo[c.key]).map(c => `
+    <div class="cc-row">
+      <div class="cc-cat">${c.key}</div>
+      <div class="cc-word">${escapeHtml(state.combo[c.key])}</div>
+    </div>`).join('');
+  area.innerHTML = `<div class="combo-card ${state.comboSelected ? 'selected' : ''}" onclick="selectCombo()">${rows}</div>`;
+}
+
+function selectCombo() {
+  if (!state.combo) return;
+  state.comboSelected = !state.comboSelected;
+  renderCombo();
+  updateDrawActions();
+}
+
+function comboTitle() {
+  if (!state.combo) return '';
+  return Object.values(state.combo).join(' × ');
+}
+
+function updateDrawActions() {
+  document.getElementById('btn-redraw').style.display = state.combo ? '' : 'none';
+  document.getElementById('draw-actions').style.display = (state.combo && state.comboSelected) ? '' : 'none';
+}
+
+function collectCombo() {
+  if (!state.combo) return;
+  collectItem({ title: comboTitle(), combo: Object.assign({}, state.combo), source: 'draw' });
+}
+
+function writeFromCombo() {
+  if (!state.combo) return;
+  createWorkFromPrompt(comboTitle(), comboTitle());
+}
+
+// ---------- 对决（关键词 PK） ----------
+function startBattle() {
+  // 对决只用世界观/人物/设定/情节，排除「形式」（写法规矩不适合对打）
+  const pool = pickRandomN(getAllPrompts().filter(p => p.category !== '形式'), 8);
+  if (pool.length < 2) { toast('题库不够，先去题库加几个文梗'); return; }
+  state.battle = {
+    phase: 'fight', round: 0, matchIdx: 0, _picking: false,
+    players: pool, winners: [], champion: null,
+    currentPair: [pool[0], pool[1]],
+  };
+  saveBattleSession();
+  renderBattle();
+}
+
+function battleMatchLabel() {
+  const b = state.battle;
+  const total = b.players.length / 2;
+  const names = b.round === 0 ? '八强' : b.round === 1 ? '半决赛' : '决赛';
+  return b.round === 2 ? names : `${names} · 第 ${Math.min(b.matchIdx + 1, total)}/${total} 场`;
+}
+
+function renderBattle() {
+  const root = document.getElementById('battle-root');
+  if (!root) return;
+  if (!state.battle && sessionStorage.getItem('writing_battle_session')) restoreBattleSession();
+  const b = state.battle;
+  if (!b || b.phase === 'idle') {
+    root.innerHTML = `
+      <div class="vs-stage">
+        <div class="empty-state" style="padding:48px 20px;">
+          <div style="opacity:.35;">${crownSvg}</div>
+          <div class="empty-text" style="font-size:1rem;">八强集结，谁是你的王牌？</div>
+        </div>
+        <button class="btn btn-primary" onclick="startBattle()">开始对决</button>
+      </div>`;
+    return;
+  }
+  if (b.phase === 'champion') {
+    const kw = b.champion ? escapeHtml(b.champion.keyword) : '';
+    root.innerHTML = `
+      <div class="vs-stage">
+        <div class="champ-icon">${crownSvg}</div>
+        <div class="champ-title">本期王牌 · ${kw}</div>
+        <div class="champ-sub">8 强 → 冠军</div>
+        <div class="btn-group" style="justify-content:center;">
+          <button class="btn btn-primary" onclick="writeBattleChampion()">开写</button>
+          <button class="btn" onclick="collectBattleChampion()">收藏</button>
+          <button class="btn" onclick="restartBattle()">再来一局</button>
+          <button class="btn" onclick="exitBattle()">退出</button>
+        </div>
+      </div>`;
+    return;
+  }
+  const [a, b2] = b.currentPair;
+  root.innerHTML = `
+    <div style="text-align:center;margin-bottom:6px;"><span class="match-label">${battleMatchLabel()}</span></div>
+    <div class="vs-pair">
+      <div class="vs-card" onclick="pickBattle(0)">
+        <div class="vs-kw">${escapeHtml(a.keyword)}</div>
+        <div class="vs-cat">${escapeHtml(a.category)}</div>
+      </div>
+      <div class="vs-verse">VS</div>
+      <div class="vs-card" onclick="pickBattle(1)">
+        <div class="vs-kw">${escapeHtml(b2.keyword)}</div>
+        <div class="vs-cat">${escapeHtml(b2.category)}</div>
+      </div>
+    </div>
+    ${renderBracket(b)}
+    <div class="btn-group" style="justify-content:center;margin-top:8px;">
+      <button class="btn btn-sm" onclick="confirmRestartBattle()">重新开局</button>
+      <button class="btn btn-sm" onclick="confirmExitBattle()">退出对决</button>
+    </div>`;
+}
+
+function renderBracket(b) {
+  const start = b.matchIdx * 2;
+  return `<div class="bracket">${b.players.map((p, i) => {
+    let cls = 'lantern';
+    if (b.winners.some(w => w.id === p.id)) cls += ' lit';
+    if (i >= start && i < start + 2) cls += ' lit';
+    return `<div class="${cls}">${escapeHtml(p.keyword)}</div>`;
+  }).join('')}</div>`;
+}
+
+function pickBattle(idx) {
+  const b = state.battle;
+  if (!b || b.phase !== 'fight' || b._picking) return;
+  b._picking = true;
+  const cards = document.querySelectorAll('#battle-root .vs-card');
+  if (cards.length === 2) {
+    cards[idx].classList.add('picked');
+    cards[1 - idx].classList.add('eliminated');
+  }
+  const winner = b.currentPair[idx];
+  setTimeout(() => {
+    b.winners.push(winner);
+    const perRound = b.players.length / 2;
+    if (b.winners.length === perRound) {
+      if (b.round < 2) {
+        b.round++; b.players = b.winners; b.winners = []; b.matchIdx = 0;
+      } else {
+        b.phase = 'champion'; b.champion = b.winners[0];
+        clearBattleSession();
+        b._picking = false;
+        renderBattle();
+        return;
+      }
+    } else {
+      b.matchIdx++;
+    }
+    b.currentPair = [b.players[b.matchIdx * 2], b.players[b.matchIdx * 2 + 1]];
+    b._picking = false;
+    saveBattleSession();
+    renderBattle();
+  }, 850);
+}
+
+function confirmRestartBattle() {
+  showModal('重新开局', '将重新抽取 8 个文梗，当前进度清空。确定？', () => { startBattle(); });
+}
+function confirmExitBattle() {
+  showModal('退出对决', '退出后当前进度不保留。确定退出？', () => { exitBattle(); });
+}
+function restartBattle() { startBattle(); }
+function exitBattle() {
+  state.battle = null;
+  clearBattleSession();
+  renderBattle();
+}
+function collectBattleChampion() {
+  const b = state.battle;
+  if (!b || !b.champion) return;
+  collectItem({ title: b.champion.keyword, keyword: b.champion.keyword, source: 'battle', champion: true });
+}
+function writeBattleChampion() {
+  const b = state.battle;
+  if (!b || !b.champion) return;
+  createWorkFromPrompt(b.champion.keyword, b.champion.keyword);
+}
+function saveBattleSession() {
+  try { sessionStorage.setItem('writing_battle_session', JSON.stringify(state.battle)); } catch (e) {}
+}
+function clearBattleSession() {
+  try { sessionStorage.removeItem('writing_battle_session'); } catch (e) {}
+}
+function restoreBattleSession() {
+  try {
+    const raw = sessionStorage.getItem('writing_battle_session');
+    if (raw) { state.battle = JSON.parse(raw); return true; }
+  } catch (e) {}
+  return false;
+}
+
+// ---------- 题库 ----------
+function renderPool() {
+  const search = ((document.getElementById('pool-search') || {}).value || '').trim();
+  const hidden = DB.getHidden();
+  const customs = DB.getPrompts().filter(p => p.keyword.includes(search));
+  const builtins = BUILTIN_TROPES.filter(p => p.keyword.includes(search));
+  const shown = builtins.filter(p => !hidden.includes(p.keyword));
+  const hiddens = builtins.filter(p => hidden.includes(p.keyword));
+
+  let html = '';
+  html += `<div class="pool-section-title"><h3>我的文梗（${customs.length}）</h3></div>`;
+  if (customs.length === 0) {
+    html += `<div class="empty-state" style="padding:20px 16px;"><div class="empty-text">还没有自定义文梗，点「+ 新增文梗」加一个</div></div>`;
+  } else {
+    html += customs.map(p => `
+      <div class="pool-item">
+        <span class="tag custom">我的</span>
+        <span class="pi-kw">${escapeHtml(p.keyword)}</span>
+        <span class="tag">${escapeHtml(p.category)}</span>
+        <span class="pi-actions">
+          <button class="btn btn-sm btn-ghost" onclick="openPromptEditor('${p.id}')">编辑</button>
+          <button class="btn btn-sm btn-ghost" style="color:var(--text-tertiary)" onclick="deletePrompt('${p.id}')">删除</button>
+        </span>
+      </div>`).join('');
+  }
+  html += `<div class="pool-section-title"><h3>内置题库（${shown.length}）</h3></div>`;
+  html += shown.map(p => `
+    <div class="pool-item">
+      <span class="tag">内置</span>
+      <span class="pi-kw">${escapeHtml(p.keyword)}</span>
+      <span class="tag">${escapeHtml(p.category)}</span>
+      <span class="pi-actions">
+        <button class="btn btn-sm btn-ghost" onclick="toggleHidePrompt('${p.keyword}')">隐藏</button>
+      </span>
+    </div>`).join('');
+  if (state.showHidden && hiddens.length > 0) {
+    html += `<div class="pool-section-title"><h3>已隐藏（${hiddens.length}）</h3></div>`;
+    html += hiddens.map(p => `
+      <div class="pool-item">
+        <span class="tag">内置</span>
+        <span class="pi-kw pi-hidden-kw">${escapeHtml(p.keyword)}</span>
+        <span class="pi-actions">
+          <button class="btn btn-sm btn-ghost" onclick="toggleHidePrompt('${p.keyword}')">恢复</button>
+        </span>
+      </div>`).join('');
+  }
+  document.getElementById('pool-list').innerHTML = html;
+  document.getElementById('btn-show-hidden').textContent = state.showHidden ? '收起已隐藏' : '显示已隐藏';
+}
+
+function toggleShowHidden() {
+  state.showHidden = !state.showHidden;
+  renderPool();
+}
+
+function toggleHidePrompt(keyword) {
+  const hidden = DB.getHidden();
+  if (hidden.includes(keyword)) DB.saveHidden(hidden.filter(k => k !== keyword));
+  else DB.saveHidden([...hidden, keyword]);
+  renderPool();
+  document.getElementById('prompts-count').textContent = '题库 ' + getAllPrompts().length;
+}
+
+function openPromptEditor(id) {
+  state.editingPromptId = id || null;
+  const sel = document.getElementById('prompt-category');
+  sel.innerHTML = CATEGORIES.map(c => `<option value="${c.key}">${c.key}</option>`).join('');
+  const kw = document.getElementById('prompt-keyword');
+  if (id) {
+    const p = DB.getPrompts().find(x => x.id === id);
+    if (p) {
+      document.getElementById('prompt-modal-title').textContent = '编辑文梗';
+      kw.value = p.keyword;
+      sel.value = p.category;
+    }
+  } else {
+    document.getElementById('prompt-modal-title').textContent = '新增文梗';
+    kw.value = '';
+    sel.value = CATEGORIES[0].key;
+  }
+  document.getElementById('prompt-modal-overlay').classList.add('show');
+  setTimeout(() => kw.focus(), 80);
+}
+
+function closePromptModal() {
+  document.getElementById('prompt-modal-overlay').classList.remove('show');
+  state.editingPromptId = null;
+}
+
+function savePrompt() {
+  const kw = document.getElementById('prompt-keyword').value.trim();
+  const cat = document.getElementById('prompt-category').value;
+  if (!kw) { toast('关键词不能为空'); return; }
+  const editing = state.editingPromptId;
+  const dup = getAllPrompts().find(p => p.keyword === kw && p.id !== editing);
+  if (dup) {
+    showModal('重复了', `题库里已有「${dup.keyword}」，还要添加吗？`, () => { savePromptForce(kw, cat, editing); });
+    return;
+  }
+  savePromptForce(kw, cat, editing);
+}
+
+function savePromptForce(kw, cat, editing) {
+  const prompts = DB.getPrompts();
+  if (editing) {
+    const p = prompts.find(x => x.id === editing);
+    if (p) { p.keyword = kw; p.category = cat; p.updatedAt = new Date().toISOString(); }
+  } else {
+    prompts.push({ id: DB.genId(), keyword: kw, category: cat, createdAt: new Date().toISOString() });
+  }
+  DB.savePrompts(prompts);
+  closePromptModal();
+  renderPool();
+  document.getElementById('prompts-count').textContent = '题库 ' + getAllPrompts().length;
+  toast(editing ? '已更新' : '已新增');
+}
+
+function deletePrompt(id) {
+  showModal('删除文梗', '确定删除这个自定义文梗？', () => {
+    DB.savePrompts(DB.getPrompts().filter(p => p.id !== id));
+    renderPool();
+    document.getElementById('prompts-count').textContent = '题库 ' + getAllPrompts().length;
+  });
+}
+
+// ---------- 收藏 ----------
+function renderCollected() {
+  const all = DB.getCollected();
+  const written = all.filter(c => c.written).length;
+  document.getElementById('collected-stats').innerHTML =
+    `<span>共 <b>${all.length}</b></span><span>已写 <b>${written}</b></span><span>未写 <b>${all.length - written}</b></span>`;
+  document.querySelectorAll('#page-prompts [data-panel="collected"] .filter-btn').forEach(btn => {
+    btn.classList.toggle('active-filter', btn.dataset.f === state.collectedFilter);
+  });
+  const list = all.filter(c => {
+    if (state.collectedFilter === 'written') return c.written;
+    if (state.collectedFilter === 'unwritten') return !c.written;
+    return true;
+  });
+  const el = document.getElementById('collected-list');
+  if (list.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-text">还没有收藏的文梗，去抽一题或打一场吧</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(c => {
+    const badge = c.source === 'battle' ? (c.champion ? '对决 · 冠军' : '对决') : '抽签';
+    return `
+    <div class="collected-card">
+      <div class="cc-top">
+        <span class="cc-title ${c.written ? 'written' : ''}">${escapeHtml(c.title)}</span>
+        <span class="tag ${c.written ? '' : 'custom'}">${c.written ? '已写' : '未写'}</span>
+      </div>
+      <div class="cc-meta">
+        <span>${badge}</span>
+        <span>${formatDate(c.createdAt)}</span>
+      </div>
+      ${c.note ? `<div class="cc-note">${escapeHtml(c.note)}</div>` : ''}
+      <div class="cc-actions">
+        <button class="btn btn-sm btn-primary" onclick="writeFromCollected('${c.id}')">开写</button>
+        <button class="btn btn-sm" onclick="toggleCollectedWritten('${c.id}')">${c.written ? '标记未写' : '标记已写'}</button>
+        <button class="btn btn-sm" onclick="editCollectedNote('${c.id}')">${c.note ? '改备注' : '加备注'}</button>
+        <button class="btn btn-sm" style="color:var(--text-tertiary)" onclick="deleteCollected('${c.id}')">删除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setCollectedFilter(f) {
+  state.collectedFilter = f;
+  renderCollected();
+}
+
+function toggleCollectedWritten(id) {
+  const list = DB.getCollected();
+  const c = list.find(x => x.id === id);
+  if (!c) return;
+  c.written = !c.written;
+  c.writtenAt = c.written ? new Date().toISOString() : null;
+  DB.saveCollected(list);
+  renderCollected();
+}
+
+function writeFromCollected(id) {
+  const list = DB.getCollected();
+  const c = list.find(x => x.id === id);
+  if (!c) return;
+  createWorkFromPrompt(c.title, c.title);
+  if (!c.written) {
+    c.written = true;
+    c.writtenAt = new Date().toISOString();
+    DB.saveCollected(list);
+  }
+}
+
+function editCollectedNote(id) {
+  state.noteEditingId = id;
+  const c = DB.getCollected().find(x => x.id === id);
+  document.getElementById('note-input').value = c ? (c.note || '') : '';
+  document.getElementById('note-modal-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('note-input').focus(), 80);
+}
+
+function closeNoteModal() {
+  document.getElementById('note-modal-overlay').classList.remove('show');
+  state.noteEditingId = null;
+}
+
+function saveCollectedNote() {
+  const id = state.noteEditingId;
+  if (!id) return;
+  const list = DB.getCollected();
+  const c = list.find(x => x.id === id);
+  if (c) {
+    c.note = document.getElementById('note-input').value.trim();
+    DB.saveCollected(list);
+  }
+  closeNoteModal();
+  renderCollected();
+}
+
+function deleteCollected(id) {
+  showModal('删除收藏', '确定删除这条收藏？', () => {
+    DB.saveCollected(DB.getCollected().filter(c => c.id !== id));
+    renderCollected();
+  });
+}
+
+// ============================================================
 // KEYBOARD SHORTCUTS (global)
 // ============================================================
 document.addEventListener('keydown', (e) => {
@@ -1282,6 +2109,9 @@ function installApp() {
 // ============================================================
 // INIT
 // ============================================================
+migrateData();
+const versionEl = document.getElementById('app-version');
+if (versionEl) versionEl.textContent = APP_VERSION;
 // Apply saved theme
 setTheme(getTheme());
 router();

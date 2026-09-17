@@ -253,6 +253,23 @@ header .actions { display: flex; gap: 12px; align-items: center; }
 }
 .ai-foot { display: flex; gap: 8px; flex-shrink: 0; }
 .ai-foot .btn { flex: 1; justify-content: center; }
+/* 分析记录：一排可切换的 chip。抽屉是 flex column，这里必须 flex-shrink:0 才不会被 body 挤扁 */
+.ai-history { display: flex; flex-wrap: wrap; gap: 6px; flex-shrink: 0; margin-bottom: 10px; }
+.ai-history:empty { display: none; }   /* 没有记录时不占位，行为跟加这个功能之前一样 */
+.ai-analysis-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.ai-analysis-title { font-size: .74rem; color: var(--text-tertiary); }
+.ai-analysis-del {
+  border: none; background: none; padding: 2px 4px; cursor: pointer; font-family: inherit;
+  font-size: .74rem; color: var(--text-tertiary); transition: color var(--transition);
+}
+.ai-analysis-del:hover { color: #e05252; }
+.ai-analysis-q {
+  font-size: .78rem; color: var(--text-secondary); background: var(--bg);
+  border-left: 2px solid var(--border); padding: 6px 10px; border-radius: 0 4px 4px 0; margin-bottom: 10px;
+}
 /* 结果排版 */
 .ai-md { font-size: .88rem; line-height: 1.85; color: var(--text); }
 .ai-md h3, .ai-md h4, .ai-md h5 { font-size: .92rem; margin: 16px 0 8px; font-weight: 600; }
@@ -875,6 +892,8 @@ input[type="range"]::-moz-range-thumb {
         <button class="ai-sheet-close" onclick="closeAISheet()">×</button>
       </div>
 
+      <div class="ai-history" id="ai-history"></div>
+
       <div class="ai-modes">
         <button class="ai-mode" data-mode="selection" onclick="setAIMode('selection')">
           选中的这段<span class="ai-mode-sub" id="ai-sel-hint">没选中</span>
@@ -960,6 +979,7 @@ function makeWork(type, opts = {}) {
     type: type || 'novel',
     content: opts.content || '',
     tags: opts.tags ? opts.tags.slice() : [],
+    analyses: [],
     createdAt: now,
     updatedAt: now,
     totalWritingTimeMs: 0,
@@ -977,7 +997,7 @@ const CATEGORIES = [
   { key: '形式', words: ['只写对话', '第二人称', '旁观者视角', '开放式结局', 'BE美学', '字数限定', '书信体', '倒叙', '日记体', '反转结局', '第一人称'] },
 ];
 const BUILTIN_TROPES = CATEGORIES.flatMap(c => c.words.map(w => ({ keyword: w, category: c.key })));
-const APP_VERSION = 'v2.0.2 (2026.09.17)';
+const APP_VERSION = 'v2.1.0 (2026.09.17)';
 
 // ============================================================
 // THEME SYSTEM
@@ -1232,6 +1252,15 @@ function migrateData() {
     }));
     DB.saveWorks(works);
     meta.schemaVersion = 2;
+  }
+  if (meta.schemaVersion < 3) {
+    // v3: 作品加 AI 分析记录，老数据补空数组
+    const works = DB.getWorks().map(w => ({
+      ...w,
+      analyses: Array.isArray(w.analyses) ? w.analyses : [],
+    }));
+    DB.saveWorks(works);
+    meta.schemaVersion = 3;
   }
   DB.saveMeta(meta);
 }
@@ -1933,6 +1962,45 @@ ${full}
   ];
 }
 
+// 二次点评：把 fromId 那条往前的整条链重建成真正的 role 交替对话，
+// 而不是把上一轮当成纯文本塞进去——这样它是真的在「接着说」。
+// 稿子用当前这一版（晞晞选的是「追问看现在的稿子」），所以在末尾要说明稿子改过了。
+function buildFollowupMessages(work, fromId, newQuestion, fullText) {
+  const byId = new Map((work.analyses || []).map(a => [a.id, a]));
+  const chain = [];
+  let cur = byId.get(fromId);
+  while (cur) {
+    chain.unshift(cur);
+    cur = cur.parentId ? byId.get(cur.parentId) : null;
+  }
+  if (!chain.length) return null;
+
+  // root 保留原稿和选段作为基底，中间轮次只带最近 3 段，防止 token 膨胀
+  const root = chain[0];
+  const tail = chain.slice(1).slice(-3);
+  const base = buildReviewMessages(
+    root.mode, fullText, root.mode === 'selection' ? root.selection : '', root.question
+  );
+
+  const msgs = [
+    { role: 'system', content: AI_SYSTEM_PROMPT },
+    base[1],
+    { role: 'assistant', content: clipText(root.result, 4000) },
+  ];
+  for (const a of tail) {
+    if (a.question) msgs.push({ role: 'user', content: a.question });
+    msgs.push({ role: 'assistant', content: clipText(a.result, 4000) });
+  }
+  msgs.push({
+    role: 'user',
+    content: newQuestion.trim() +
+      '\n\n（说明：上面那份稿子我后来又改过，你现在看到的就是最新的。' +
+      '之前那条点评是对旧版说的，你自己对齐一下。）\n' +
+      '再提醒一次：只告诉我问题和方向，不要给我改好的句子。',
+  });
+  return msgs;
+}
+
 // ---------- 极简 Markdown 渲染 ----------
 // 整段先转义再做有限替换，AI 输出里的 HTML 永远不会被执行
 function renderMarkdown(text) {
@@ -1972,7 +2040,10 @@ function renderMarkdown(text) {
 }
 
 // ---------- AI 抽屉 ----------
-let aiState = { mode: 'full', result: '', busy: false };
+// analyses / viewId / workId 是「分析记录」用到的：
+//   analyses 打开抽屉时从当前作品载入，viewId 为 null 表示处在「新分析」态，
+//   有值表示正在看某一条（此时按钮变成「继续追问」）
+let aiState = { mode: 'full', result: '', busy: false, analyses: [], viewId: null, workId: null };
 
 function getEditorSelection() {
   const ta = document.getElementById('editor-content');
@@ -1991,18 +2062,112 @@ function openAISheet() {
   const sel = getEditorSelection();
   aiState.result = '';
   aiState.mode = sel ? 'selection' : 'full';
+  // 载入这篇已有的分析记录；默认进「新分析」态（抽屉主职是拿新意见，不是看旧的）
+  aiState.workId = state.currentWorkId;
+  aiState.viewId = null;
+  aiState.analyses = getCurrentAnalyses();
   const q = document.getElementById('ai-question');
   if (q) q.value = '';
-  const copyBtn = document.getElementById('btn-ai-copy');
-  if (copyBtn) copyBtn.style.display = 'none';
   renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">选一个模式，让它看看</div></div>');
+  renderAIHistory();
   syncAIModes();
+  syncAIView();
   document.getElementById('ai-sheet-overlay').classList.add('show');
 }
 
 function closeAISheet() {
   const el = document.getElementById('ai-sheet-overlay');
   if (el) el.classList.remove('show');
+  aiState.viewId = null;
+}
+
+// ---------- 分析记录 ----------
+function getCurrentAnalyses() {
+  const works = DB.getWorks();
+  const w = works.find(x => x.id === state.currentWorkId);
+  return (w && Array.isArray(w.analyses)) ? w.analyses : [];
+}
+
+function renderAIHistory() {
+  const el = document.getElementById('ai-history');
+  if (!el) return;
+  // 用数组下标传参，不传 id——跟作品页标签筛选同一个理由，避免内容把 onclick 拆坏
+  let html = aiState.analyses.map((a, i) =>
+    `<button class="cat-chip ${a.id === aiState.viewId ? 'active' : ''}" onclick="viewAnalysisAt(${i})">` +
+    `${a.parentId ? '↳ ' : ''}分析${i + 1}</button>`
+  ).join('');
+  // 查看某条时模式行是藏起来的，得给一个回到「新分析」态的出口
+  if (aiState.viewId) {
+    html += '<button class="cat-chip" onclick="startNewAnalysis()">＋ 新分析</button>';
+  }
+  el.innerHTML = html;
+}
+
+function viewAnalysisAt(i) {
+  const a = aiState.analyses[i];
+  if (!a) return;
+  aiState.viewId = a.id;
+  aiState.result = a.result;
+  renderAIHistory();
+  syncAIView();
+  renderAIBody(renderAnalysisView(a, i));
+}
+
+function startNewAnalysis() {
+  aiState.viewId = null;
+  aiState.result = '';
+  const q = document.getElementById('ai-question');
+  if (q) q.value = '';
+  renderAIHistory();
+  syncAIView();
+  renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">选一个模式，让它看看</div></div>');
+}
+
+function renderAnalysisView(a, i) {
+  const modeLabel = a.mode === 'selection' ? '针对选中那段' : '通篇诊断';
+  return `<div class="ai-analysis-head">
+      <span class="ai-analysis-title">分析${i + 1} · ${formatDate(a.createdAt)} · ${modeLabel}</span>
+      <button class="ai-analysis-del" onclick="deleteAnalysis('${a.id}')">删除</button>
+    </div>
+    ${a.question ? `<div class="ai-analysis-q">你问：${escapeHtml(a.question)}</div>` : ''}
+    <div class="ai-md">${renderMarkdown(a.result)}</div>`;
+}
+
+function deleteAnalysis(id) {
+  showModal('删除这条分析', '删掉之后就找不回来了。确定吗？', () => {
+    const works = DB.getWorks();
+    const w = works.find(x => x.id === state.currentWorkId);
+    if (!w || !Array.isArray(w.analyses)) return;
+    const target = w.analyses.find(a => a.id === id);
+    if (!target) return;
+    // 子节点重挂到被删节点的父级，否则追问链会在这里断掉
+    w.analyses = w.analyses
+      .filter(a => a.id !== id)
+      .map(a => a.parentId === id ? { ...a, parentId: target.parentId || null } : a);
+    DB.saveWorks(works);
+    aiState.analyses = w.analyses;
+    if (aiState.viewId === id) {
+      aiState.viewId = null;
+      aiState.result = '';
+      renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">这条已经删掉了</div></div>');
+    }
+    renderAIHistory();
+    syncAIView();
+    toast('已删除');
+  });
+}
+
+// 抽屉两种状态的开关：新分析态 / 查看某条分析
+function syncAIView() {
+  const viewing = !!aiState.viewId;
+  const modes = document.querySelector('.ai-modes');
+  if (modes) modes.style.display = viewing ? 'none' : '';
+  const q = document.getElementById('ai-question');
+  if (q) q.placeholder = viewing ? '想追问什么？' : '还想问点什么？（可不填）';
+  const runBtn = document.getElementById('btn-ai-run');
+  if (runBtn) runBtn.textContent = viewing ? '继续追问' : '开始分析';
+  const copyBtn = document.getElementById('btn-ai-copy');
+  if (copyBtn) copyBtn.style.display = (viewing || aiState.result) ? '' : 'none';
 }
 
 function syncAIModes() {
@@ -2031,11 +2196,29 @@ async function runAIReview() {
   if (!fullText.trim()) { toast('正文还是空的'); return; }
 
   const selection = getEditorSelection();
-  if (aiState.mode === 'selection' && !selection) { toast('先在正文里划一段'); return; }
+  const viewingId = aiState.viewId;   // 有值 = 对着某条已有分析追问
+  if (!viewingId && aiState.mode === 'selection' && !selection) { toast('先在正文里划一段'); return; }
 
   const extra = (document.getElementById('ai-question') || {}).value || '';
+  if (viewingId && !extra.trim()) { toast('先写一句想问的'); return; }
+
+  const workId = state.currentWorkId;   // await 前存下 id，回来后用它重新找
   const btn = document.getElementById('btn-ai-run');
   const copyBtn = document.getElementById('btn-ai-copy');
+
+  // 消息在 await 前构建好（都用此刻的快照）
+  let messages;
+  let entryMode = aiState.mode;
+  if (viewingId) {
+    const w0 = DB.getWorks().find(x => x.id === workId);
+    if (!w0) { toast('这篇稿子找不到了'); return; }
+    messages = buildFollowupMessages(w0, viewingId, extra, fullText);
+    if (!messages) { toast('这条分析已经不在了'); return; }
+    const parent = (w0.analyses || []).find(a => a.id === viewingId);
+    if (parent) entryMode = parent.mode;
+  } else {
+    messages = buildReviewMessages(aiState.mode, fullText, selection, extra);
+  }
 
   aiState.busy = true;
   btn.disabled = true;
@@ -2047,17 +2230,40 @@ async function runAIReview() {
   );
 
   try {
-    const result = await WriterAI.chat(buildReviewMessages(aiState.mode, fullText, selection, extra));
+    const result = await WriterAI.chat(messages);
+
+    // ↓↓↓ 这一整段必须是同步的。AI 请求要十几秒，期间她的每次输入都会触发
+    // saveCurrentWork()（1500ms 防抖）。所以这里绝不能拿 await 之前那份 works
+    // 写回去——那会把她这十几秒打的字全部冲掉。重新读一次再改。
+    const works = DB.getWorks();
+    const w = works.find(x => x.id === workId);
+    if (!w) throw new Error('这篇稿子已经不在了，分析结果没能保存');
+
+    const entry = {
+      id: DB.genId(),
+      parentId: viewingId || null,
+      createdAt: new Date().toISOString(),
+      mode: entryMode,
+      selection: viewingId ? '' : selection,
+      question: extra.trim(),
+      result,
+    };
+    w.analyses = [...(w.analyses || []), entry];
+    DB.saveWorks(works);
+
+    aiState.analyses = w.analyses;
+    aiState.viewId = entry.id;
     aiState.result = result;
-    renderAIBody('<div class="ai-md">' + renderMarkdown(result) + '</div>');
-    copyBtn.style.display = '';
+    renderAIHistory();
+    syncAIView();
+    renderAIBody(renderAnalysisView(entry, w.analyses.length - 1));
   } catch (err) {
     aiState.result = '';
     renderAIBody('<div class="ai-error">' + escapeHtml(err.message) + '</div>');
   } finally {
     aiState.busy = false;
     btn.disabled = false;
-    btn.textContent = '开始分析';
+    syncAIView();   // 恢复按钮文案（新分析态「开始分析」/ 查看态「继续追问」）
   }
 }
 
@@ -2160,7 +2366,12 @@ function importAllData() {
         '导入备份',
         `会覆盖现在的 ${nowCount} 条内容，换成备份里的 ${dump.works.length} 条。确定吗？`,
         () => {
-          DB.saveWorks(dump.works.map(w => ({ ...w, tags: Array.isArray(w.tags) ? w.tags : [] })));
+          // 导入不走 migrateData()，这里必须自己兜底，否则老备份进来后 .analyses 会直接抛错
+          DB.saveWorks(dump.works.map(w => ({
+            ...w,
+            tags: Array.isArray(w.tags) ? w.tags : [],
+            analyses: Array.isArray(w.analyses) ? w.analyses : [],
+          })));
           if (Array.isArray(dump.prompts)) DB.savePrompts(dump.prompts);
           if (Array.isArray(dump.hidden)) DB.saveHidden(dump.hidden);
           if (Array.isArray(dump.collected)) DB.saveCollected(dump.collected);

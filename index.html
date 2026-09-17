@@ -152,7 +152,8 @@ h3 { font-size: 0.95rem; font-weight: 500; color: var(--text-secondary); }
 a { color: inherit; text-decoration: none; }
 
 /* ===== Layout ===== */
-#app { max-width: 720px; margin: 0 auto; padding: 0 20px; min-height: 100vh; }
+/* 底部留出固定导航栏的高度，否则内容会被压住 */
+#app { max-width: 720px; margin: 0 auto; padding: 0 20px calc(72px + env(safe-area-inset-bottom)); min-height: 100vh; }
 
 /* ===== Header ===== */
 header {
@@ -174,6 +175,118 @@ header .actions { display: flex; gap: 12px; align-items: center; }
 .page { display: none; animation: fadeIn 0.25s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== 底部导航 ===== */
+.bnav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 720px; z-index: 50;
+  display: flex; background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bnav.hidden { display: none; }
+.bnav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 0 7px; border: none; background: none; cursor: pointer;
+  color: var(--text-tertiary); font-size: .66rem; font-family: inherit;
+  transition: color var(--transition); letter-spacing: .05em;
+}
+.bnav-item svg { width: 19px; height: 19px; }
+.bnav-item.active { color: var(--accent); }
+
+/* ===== 我的 ===== */
+.me-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 20px;
+}
+.me-row { margin-bottom: 12px; }
+.me-row:last-child { margin-bottom: 0; }
+.me-label { display: block; font-size: .76rem; color: var(--text-secondary); margin-bottom: 6px; }
+.me-input {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: .86rem; font-family: inherit; background: var(--surface); color: var(--text); outline: none;
+}
+.me-input:focus { border-color: var(--accent); }
+.me-hint { font-size: .74rem; color: var(--text-tertiary); line-height: 1.65; margin-top: 10px; }
+.input-with-btn { display: flex; gap: 8px; align-items: center; }
+.input-with-btn .me-input { flex: 1; min-width: 0; }
+.input-with-btn .btn { flex-shrink: 0; }
+
+/* ===== AI 抽屉 ===== */
+.ai-sheet-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.25);
+  display: none; align-items: flex-end; justify-content: center; z-index: 200;
+}
+.ai-sheet-overlay.show { display: flex; }
+.ai-sheet {
+  width: 100%; max-width: 720px; max-height: 82vh;
+  background: var(--bg); border-radius: var(--radius) var(--radius) 0 0;
+  display: flex; flex-direction: column;
+  padding: 0 20px calc(16px + env(safe-area-inset-bottom));
+  animation: slideUp .26s ease;
+  box-shadow: 0 -8px 32px rgba(0,0,0,.14);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.ai-sheet-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 14px; flex-shrink: 0;
+}
+.ai-sheet-title { font-size: 1rem; font-weight: 600; }
+.ai-sheet-close {
+  border: none; background: none; color: var(--text-tertiary); font-size: 1.3rem;
+  cursor: pointer; line-height: 1; padding: 0 4px; font-family: inherit;
+}
+.ai-sheet-close:hover { color: var(--text); }
+.ai-modes { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
+.ai-mode {
+  flex: 1; padding: 9px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary);
+  font-size: .84rem; font-family: inherit; cursor: pointer; transition: all var(--transition);
+}
+.ai-mode.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); font-weight: 600; }
+.ai-mode-sub { display: block; font-size: .68rem; color: var(--text-tertiary); font-weight: 400; margin-top: 2px; }
+.ai-extra { margin-bottom: 12px; flex-shrink: 0; }
+.ai-body {
+  flex: 1; overflow-y: auto; min-height: 120px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; margin-bottom: 12px;
+}
+.ai-foot { display: flex; gap: 8px; flex-shrink: 0; }
+.ai-foot .btn { flex: 1; justify-content: center; }
+/* 结果排版 */
+.ai-md { font-size: .88rem; line-height: 1.85; color: var(--text); }
+.ai-md h3, .ai-md h4, .ai-md h5 { font-size: .92rem; margin: 16px 0 8px; font-weight: 600; }
+.ai-md h3:first-child, .ai-md h4:first-child, .ai-md h5:first-child { margin-top: 0; }
+.ai-md p { margin: 0 0 10px; }
+.ai-md ul { margin: 0 0 10px; padding-left: 20px; }
+.ai-md li { margin-bottom: 5px; }
+.ai-md blockquote {
+  margin: 0 0 10px; padding: 6px 12px; border-left: 2px solid var(--accent);
+  color: var(--text-secondary); background: var(--surface-alt);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.ai-md code {
+  background: var(--surface-alt); padding: 1px 5px; border-radius: 4px;
+  font-size: .84em; font-family: ui-monospace, Menlo, monospace;
+}
+.ai-md strong { font-weight: 600; }
+/* 等待 */
+.ai-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 16px; }
+.ai-spinner {
+  width: 28px; height: 28px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-loading-text { font-size: .8rem; color: var(--text-tertiary); }
+.ai-error { color: #c44; font-size: .86rem; line-height: 1.7; }
+/* 编辑器工具栏里的 AI 按钮。不用 btn-primary：cream/white 主题下 --accent 太浅，白字会看不见 */
+.ai-btn {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--text);
+  font-weight: 600;
+}
+.ai-btn:hover { border-color: var(--accent-hover); }
 
 /* ===== Stats Bar (compact) ===== */
 .stats-bar {
@@ -374,7 +487,7 @@ input[type="range"]::-moz-range-thumb {
 .modal p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
 .modal .btn-group { justify-content: flex-end; }
 
-/* ===== 文梗 · 王牌对王牌 ===== */
+/* ===== 文梗 ===== */
 .prompts-sub { padding: 16px 0 40px; }
 .tabs { display: flex; gap: 4px; margin: 4px 0 16px; border-bottom: 1px solid var(--border); }
 .tab-btn {
@@ -410,30 +523,6 @@ input[type="range"]::-moz-range-thumb {
 .combo-card .cc-word { font-size: 1.05rem; font-weight: 600; }
 .combo-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
 
-/* 对决 */
-.vs-stage { text-align: center; }
-.vs-pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; margin: 18px 0; }
-.vs-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 28px 14px; cursor: pointer; position: relative; transition: all .2s;
-}
-.vs-card:hover { border-color: var(--accent); box-shadow: var(--shadow-hover); transform: translateY(-3px); }
-.vs-card .vs-kw { font-size: 1.35rem; font-weight: 700; }
-.vs-card .vs-cat { font-size: .72rem; color: var(--text-tertiary); margin-top: 6px; letter-spacing: .08em; }
-.vs-card.picked { animation: pickedOut .5s ease; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
-.vs-card.eliminated { opacity: .35; filter: grayscale(1); }
-.vs-verse { display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); font-size: 1.1rem; }
-.match-label { font-size: .82rem; color: var(--text-secondary); letter-spacing: .08em; }
-.battle-tag { position: absolute; top: 8px; right: 10px; font-size: .68rem; letter-spacing: .1em; }
-.vs-card.picked .battle-tag { color: var(--accent); font-weight: 700; }
-.vs-card.eliminated .battle-tag { color: var(--text-tertiary); font-style: italic; }
-.champ-icon { width: 52px; height: 52px; margin: 0 auto 12px; color: var(--accent); animation: crownPop .5s ease; }
-.champ-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
-.champ-sub { font-size: .82rem; color: var(--text-secondary); margin-bottom: 20px; }
-
-@keyframes pickedOut { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
-@keyframes crownPop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
-
 /* 题库 */
 .pool-section-title { display: flex; justify-content: space-between; align-items: center; margin: 18px 0 10px; }
 .pool-section-title h3 { font-size: .92rem; color: var(--text-secondary); font-weight: 600; }
@@ -451,6 +540,41 @@ input[type="range"]::-moz-range-thumb {
   flex-shrink: 0;
 }
 .tag.custom { color: var(--accent); border-color: var(--accent-light); background: var(--accent-light); }
+
+/* ===== 标签 ===== */
+/* 编辑器里的标签编辑行 */
+.tag-edit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 14px; }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: .72rem; padding: 3px 4px 3px 10px; border-radius: 12px;
+  background: var(--surface-alt); color: var(--text-secondary);
+  border: 1px solid var(--border); max-width: 160px;
+}
+.tag-chip .tag-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag-chip .tag-x {
+  border: none; background: none; color: var(--text-tertiary); cursor: pointer;
+  font-size: .9rem; line-height: 1; padding: 0 3px; font-family: inherit;
+  border-radius: 50%; transition: color var(--transition);
+}
+.tag-chip .tag-x:hover { color: #c44; }
+.tag-add-btn {
+  border: 1px dashed var(--border); background: none; color: var(--text-tertiary);
+  font-size: .72rem; padding: 3px 10px; border-radius: 12px; cursor: pointer;
+  font-family: inherit; transition: all var(--transition);
+}
+.tag-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tag-input {
+  border: 1px solid var(--accent); background: var(--surface); color: var(--text);
+  font-size: .72rem; padding: 3px 10px; border-radius: 12px; outline: none;
+  font-family: inherit; width: 110px;
+}
+/* 作品页筛选栏 */
+.tag-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+.tag-filter:empty { display: none; }
+.tag-filter .cat-chip { font-size: .72rem; padding: 3px 10px; }
+.tag-filter-label { font-size: .72rem; color: var(--text-tertiary); align-self: center; margin-right: 2px; }
+/* 卡片上的标签 */
+.card .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
 .pool-search { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   font-size: .88rem; font-family: inherit; background: var(--surface); color: var(--text); outline: none; margin-bottom: 14px; }
 .pool-search:focus { border-color: var(--accent); }
@@ -475,10 +599,12 @@ input[type="range"]::-moz-range-thumb {
 
 /* ===== Responsive ===== */
 @media (max-width: 520px) {
-  #app { padding: 0 16px; }
+  #app { padding: 0 16px calc(72px + env(safe-area-inset-bottom)); }
   .card-grid { grid-template-columns: 1fr; }
   .stats-bar { padding: 8px 4px 5px; }
-  .editor-toolbar { gap: 10px; padding: 8px 12px; }
+  .editor-toolbar { gap: 8px; padding: 8px 10px; }
+  /* 收窄滑块，让「字号 / 字数 / 计时 / AI」四项在 375px 下压回一行，避免换行顶矮输入框 */
+  input[type="range"] { width: 60px; }
   .editor-textarea { padding: 14px; min-height: calc(100vh - 340px); }
   .quick-actions { flex-direction: column; }
   .quick-actions .btn { padding: 10px; }
@@ -505,47 +631,69 @@ input[type="range"]::-moz-range-thumb {
 
 <div id="app">
 
-  <!-- ===== HOME ===== -->
-  <section id="page-home" class="page active">
+  <!-- ===== 我的 ===== -->
+  <section id="page-me" class="page">
     <header>
-      <div class="title">
-        <span class="t-name">笔间</span>
-        <div class="theme-dots" id="theme-dots"></div>
-      </div>
-      <div class="actions" style="gap:4px;">
-        <button class="btn btn-sm btn-ghost" onclick="navigate('works')">作品</button>
-        <button class="btn btn-sm btn-ghost" onclick="navigate('ideas')">灵感</button>
-        <button class="btn btn-sm btn-ghost" onclick="navigate('prompts')">文梗</button>
-      </div>
+      <div class="title"><span class="t-name">我的</span></div>
     </header>
 
-    <div class="stats-bar" id="home-stats"></div>
-
-    <div class="quick-actions">
-      <button class="btn btn-primary" onclick="createNewWork()">+ 新作品</button>
-      <button class="btn" onclick="createNewIdea()">* 记灵感</button>
-      <button class="btn btn-sm install-btn" id="install-btn" style="display:none;" onclick="installApp()">↓ 安装</button>
+    <div class="section-header"><h2>AI 改文</h2></div>
+    <div class="me-card">
+      <div class="me-row">
+        <label class="me-label" for="ai-key">API Key</label>
+        <div class="input-with-btn">
+          <input type="password" class="me-input" id="ai-key" placeholder="sk-..." autocomplete="off" spellcheck="false">
+          <button class="btn btn-sm" id="ai-key-toggle" onclick="toggleKeyVisible()">显示</button>
+        </div>
+      </div>
+      <div class="me-row">
+        <label class="me-label" for="ai-base">接口地址</label>
+        <input type="text" class="me-input" id="ai-base" spellcheck="false"
+               placeholder="https://api.deepseek.com/v1/chat/completions">
+      </div>
+      <div class="me-row">
+        <label class="me-label" for="ai-model">模型</label>
+        <input type="text" class="me-input" id="ai-model" spellcheck="false" placeholder="deepseek-v4-flash">
+      </div>
+      <div class="me-hint">Key 只存在这台设备的浏览器里，不会上传到任何地方。换别的模型只要改上面接口地址和模型名——国内能浏览器直连的主要是 DeepSeek 和智谱。</div>
+      <div class="btn-group" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="saveAIConfig()">保存</button>
+        <button class="btn" id="btn-test-ai" onclick="testAIConnection()">测试连接</button>
+      </div>
     </div>
 
-    <div class="section-header"><h2>最近更新</h2></div>
-    <div class="recent-list" id="home-recent"></div>
+    <div class="section-header"><h2>主题</h2></div>
+    <div class="me-card">
+      <div class="theme-dots" id="theme-dots"></div>
+    </div>
+
+    <div class="section-header"><h2>数据</h2></div>
+    <div class="me-card">
+      <div class="me-hint">作品和灵感都存在这台设备的浏览器里，清缓存会丢。偶尔导出一次备份比较稳妥。</div>
+      <div class="btn-group" style="margin-top:14px;">
+        <button class="btn" onclick="exportAllData()">导出备份</button>
+        <button class="btn" onclick="importAllData()">导入备份</button>
+        <button class="btn btn-sm install-btn" id="install-btn" style="display:none;" onclick="installApp()">↓ 安装到桌面</button>
+      </div>
+    </div>
+
     <footer class="app-footer" id="app-version"></footer>
   </section>
 
   <!-- ===== WORKS ===== -->
   <section id="page-works" class="page">
     <header>
-      <button class="back" onclick="navigate('home')">← 返回</button>
-      <div class="title">作品</div>
+      <div class="title"><span class="t-name">作品</span></div>
       <div class="actions">
         <button class="btn btn-sm btn-primary" onclick="createNewWork()">+ 新建</button>
       </div>
     </header>
+    <div class="stats-bar" id="home-stats"></div>
     <div id="works-filter" style="display:flex;gap:6px;margin-bottom:16px;">
-      <button class="btn btn-sm filter-btn active-filter" data-filter="all" onclick="filterWorks('all')">全部</button>
-      <button class="btn btn-sm filter-btn" data-filter="novel" onclick="filterWorks('novel')">小说</button>
-      <button class="btn btn-sm filter-btn" data-filter="idea" onclick="filterWorks('idea')">灵感</button>
+      <button class="btn btn-sm filter-btn" data-filter="all" onclick="filterWorks('all')">全部</button>
+      <button class="btn btn-sm filter-btn active-filter" data-filter="novel" onclick="filterWorks('novel')">小说</button>
     </div>
+    <div class="tag-filter" id="works-tags"></div>
     <div class="card-grid" id="works-grid"></div>
   </section>
 
@@ -563,6 +711,7 @@ input[type="range"]::-moz-range-thumb {
       <input type="text" class="editor-title-input" id="editor-title" placeholder="作品标题" spellcheck="false">
       <span class="editor-save-status" id="editor-save-status"></span>
     </div>
+    <div class="tag-edit-row" id="editor-tags"></div>
 
     <div class="editor-toolbar">
       <div class="tool-group">
@@ -576,6 +725,9 @@ input[type="range"]::-moz-range-thumb {
       <div class="tool-group">
         <span class="editor-timer"><span class="timer-icon">◷</span> <span id="editor-timer">00:00:00</span></span>
       </div>
+      <div class="tool-group">
+        <button class="btn btn-sm ai-btn" id="btn-ai" onclick="openAISheet()">AI 改文</button>
+      </div>
     </div>
 
     <textarea class="editor-textarea" id="editor-content" placeholder="开始写吧……"></textarea>
@@ -588,7 +740,6 @@ input[type="range"]::-moz-range-thumb {
   <!-- ===== IDEAS ===== -->
   <section id="page-ideas" class="page">
     <header>
-      <button class="back" onclick="navigate('home')">← 返回</button>
       <div class="title">灵感</div>
       <div class="actions">
         <button class="btn btn-sm btn-primary" onclick="createNewIdea()">+ 新建</button>
@@ -607,16 +758,16 @@ input[type="range"]::-moz-range-thumb {
       </div>
     </header>
     <input type="text" class="idea-editor-title" id="idea-editor-title" placeholder="灵感标题" spellcheck="false">
+    <div class="tag-edit-row" id="idea-tags"></div>
     <textarea class="idea-editor-content" id="idea-editor-content" placeholder="记录你的灵感……"></textarea>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;padding-bottom:40px;">
       <button class="btn btn-primary" onclick="saveIdeaEdit()">保存</button>
     </div>
   </section>
 
-  <!-- ===== 文梗 · 王牌对王牌 ===== -->
+  <!-- ===== 文梗 ===== -->
   <section id="page-prompts" class="page">
     <header>
-      <button class="back" onclick="navigate('home')">← 返回</button>
       <div class="title">文梗</div>
       <div class="actions">
         <span class="editor-save-status" id="prompts-count"></span>
@@ -626,9 +777,6 @@ input[type="range"]::-moz-range-thumb {
     <nav class="tabs" id="prompts-tabs">
       <button class="tab-btn active" data-tab="draw" onclick="setPromptsTab('draw')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/></svg>抽签
-      </button>
-      <button class="tab-btn" data-tab="battle" onclick="setPromptsTab('battle')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>对决
       </button>
       <button class="tab-btn" data-tab="pool" onclick="setPromptsTab('pool')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>题库
@@ -651,11 +799,6 @@ input[type="range"]::-moz-range-thumb {
           <button class="btn btn-primary" onclick="writeFromCombo()">开写</button>
           <button class="btn" onclick="collectCombo()">收藏这道题</button>
         </div>
-      </div>
-
-      <!-- 对决 -->
-      <div class="tab-panel" data-panel="battle">
-        <div id="battle-root"></div>
       </div>
 
       <!-- 题库 -->
@@ -724,6 +867,58 @@ input[type="range"]::-moz-range-thumb {
     </div>
   </div>
 
+  <!-- ===== AI 抽屉 ===== -->
+  <div class="ai-sheet-overlay" id="ai-sheet-overlay">
+    <div class="ai-sheet">
+      <div class="ai-sheet-head">
+        <span class="ai-sheet-title">AI 改文</span>
+        <button class="ai-sheet-close" onclick="closeAISheet()">×</button>
+      </div>
+
+      <div class="ai-modes">
+        <button class="ai-mode" data-mode="selection" onclick="setAIMode('selection')">
+          选中的这段<span class="ai-mode-sub" id="ai-sel-hint">没选中</span>
+        </button>
+        <button class="ai-mode" data-mode="full" onclick="setAIMode('full')">通篇诊断</button>
+      </div>
+
+      <div class="ai-extra">
+        <input class="me-input" id="ai-question" placeholder="还想问点什么？（可不填）" spellcheck="false">
+      </div>
+
+      <div class="ai-body" id="ai-body">
+        <div class="empty-state" style="padding:28px 16px">
+          <div class="empty-text">选一个模式，让它看看</div>
+        </div>
+      </div>
+
+      <div class="ai-foot">
+        <button class="btn btn-primary" id="btn-ai-run" onclick="runAIReview()">开始分析</button>
+        <button class="btn" id="btn-ai-copy" onclick="copyAIResult()" style="display:none;">复制结果</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 底部导航 ===== -->
+  <nav class="bnav" id="bnav">
+    <button class="bnav-item" data-nav="works" onclick="navigate('works')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 015.5 4H10l2 2h6.5A1.5 1.5 0 0120 7.5v10A1.5 1.5 0 0118.5 19h-13A1.5 1.5 0 014 17.5z"/></svg>
+      作品
+    </button>
+    <button class="bnav-item" data-nav="ideas" onclick="navigate('ideas')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 00-3.5 10.9V16h7v-2.1A6 6 0 0012 3z"/><path d="M9.5 19h5"/></svg>
+      灵感
+    </button>
+    <button class="bnav-item" data-nav="prompts" onclick="navigate('prompts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      文梗
+    </button>
+    <button class="bnav-item" data-nav="me" onclick="navigate('me')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0115 0"/></svg>
+      我的
+    </button>
+  </nav>
+
 </div>
 
 <script>
@@ -756,6 +951,21 @@ const DB = {
   }
 };
 
+// 统一的 work 对象工厂 —— 新建作品 / 记灵感 / 从文梗开写都走这里
+function makeWork(type, opts = {}) {
+  const now = new Date().toISOString();
+  return {
+    id: DB.genId(),
+    title: opts.title || '',
+    type: type || 'novel',
+    content: opts.content || '',
+    tags: opts.tags ? opts.tags.slice() : [],
+    createdAt: now,
+    updatedAt: now,
+    totalWritingTimeMs: 0,
+  };
+}
+
 // ============================================================
 // 文梗题库
 // ============================================================
@@ -767,7 +977,7 @@ const CATEGORIES = [
   { key: '形式', words: ['只写对话', '第二人称', '旁观者视角', '开放式结局', 'BE美学', '字数限定', '书信体', '倒叙', '日记体', '反转结局', '第一人称'] },
 ];
 const BUILTIN_TROPES = CATEGORIES.flatMap(c => c.words.map(w => ({ keyword: w, category: c.key })));
-const APP_VERSION = 'v1.1.3 (2026.08.12)';
+const APP_VERSION = 'v2.0.2 (2026.09.17)';
 
 // ============================================================
 // THEME SYSTEM
@@ -821,17 +1031,17 @@ let state = {
   currentWorkId: null,
   currentIdeaId: null,
   worksFilter: 'novel',
+  tagFilter: [],          // 作品页选中的标签（多选 = 同时含有）
   timerInterval: null,
   timerStartTime: null,
   timerAccumulated: 0,
   saveTimeout: null,
   lastContent: '',
   // 文梗
-  promptsTab: 'draw',     // draw | battle | pool | collected
+  promptsTab: 'draw',     // draw | pool | collected
   drawCats: null,         // {世界观:true, ...}
   combo: null,            // 最近组合题 {维度:词}
   comboSelected: false,
-  battle: null,           // 对决状态
   showHidden: false,
   collectedFilter: 'all',
   poolSearch: '',
@@ -846,7 +1056,7 @@ function navigate(page, params) {
 }
 
 function getPageFromHash() {
-  const hash = window.location.hash.slice(1) || 'home';
+  const hash = window.location.hash.slice(1) || 'works';
   const parts = hash.split('?');
   return { page: parts[0], params: parts[1] || '' };
 }
@@ -872,10 +1082,6 @@ function router() {
   stopTimer();
 
   switch (page) {
-    case 'home':
-      document.getElementById('page-home').classList.add('active');
-      renderHome();
-      break;
     case 'works':
       document.getElementById('page-works').classList.add('active');
       renderWorks();
@@ -896,13 +1102,35 @@ function router() {
       break;
     case 'prompts':
       document.getElementById('page-prompts').classList.add('active');
-      if (p.tab && ['draw', 'battle', 'pool', 'collected'].includes(p.tab)) state.promptsTab = p.tab;
+      if (p.tab && ['draw', 'pool', 'collected'].includes(p.tab)) state.promptsTab = p.tab;
       renderPromptsPage();
       break;
+    case 'me':
+      document.getElementById('page-me').classList.add('active');
+      renderMe();
+      break;
     default:
-      document.getElementById('page-home').classList.add('active');
-      renderHome();
+      document.getElementById('page-works').classList.add('active');
+      renderWorks();
   }
+
+  updateBottomNav(page);
+}
+
+// 底部导航高亮；写作/灵感编辑器是沉浸页，不显示底栏
+function updateBottomNav(page) {
+  const nav = document.getElementById('bnav');
+  if (!nav) return;
+  nav.classList.toggle('hidden', page === 'editor' || page === 'idea-editor');
+  const map = {
+    works: 'works', editor: 'works',
+    ideas: 'ideas', 'idea-editor': 'ideas',
+    prompts: 'prompts', me: 'me',
+  };
+  const active = map[page] || 'works';
+  nav.querySelectorAll('.bnav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.nav === active);
+  });
 }
 
 window.addEventListener('hashchange', router);
@@ -967,7 +1195,7 @@ function pickRandomN(pool, n) {
   return shuffle(pool).slice(0, Math.min(n, pool.length));
 }
 
-// 运行时合并：内置(过滤隐藏) + 自定义；每个词都有稳定 id（对决晋级判断依赖它）
+// 运行时合并：内置(过滤隐藏) + 自定义；每个词都有稳定 id
 function getAllPrompts() {
   const hidden = DB.getHidden();
   const builtins = BUILTIN_TROPES
@@ -996,6 +1224,15 @@ function migrateData() {
     if (!Array.isArray(DB.getCollected())) DB.saveCollected(DB.getCollected().map(normalizeCollected));
     meta.schemaVersion = 1;
   }
+  if (meta.schemaVersion < 2) {
+    // v2: 作品加标签，老数据补空数组
+    const works = DB.getWorks().map(w => ({
+      ...w,
+      tags: Array.isArray(w.tags) ? w.tags : [],
+    }));
+    DB.saveWorks(works);
+    meta.schemaVersion = 2;
+  }
   DB.saveMeta(meta);
 }
 
@@ -1004,9 +1241,10 @@ function migrateData() {
 // ============================================================
 let modalCallback = null;
 
-function showModal(title, text, cb) {
+function showModal(title, text, cb, btnLabel) {
   document.getElementById('modal-title').textContent = title;
   document.getElementById('modal-text').textContent = text;
+  document.getElementById('modal-confirm').textContent = btnLabel || '删除';
   document.getElementById('modal-overlay').classList.add('show');
   modalCallback = cb;
 }
@@ -1026,59 +1264,142 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeModal();
 });
 
+document.getElementById('ai-sheet-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeAISheet();
+});
+
 // ============================================================
-// HOME PAGE
+// 统计条（原首页，已并进作品页顶部）
 // ============================================================
-function renderHome() {
+function renderStats() {
   const works = DB.getWorks();
   const novels = works.filter(w => w.type === 'novel');
   const ideas = works.filter(w => w.type === 'idea');
 
-  const totalWords = works.reduce((sum, w) => sum + countChars(w.content || ''), 0);
-  const totalTime = works.reduce((sum, w) => sum + (w.totalWritingTimeMs || 0), 0);
+  // 灵感是随手记的碎片，不算进「字数」——那里只记真正写出来的正文
+  const totalWords = novels.reduce((sum, w) => sum + countChars(w.content || ''), 0);
+  const totalTime = novels.reduce((sum, w) => sum + (w.totalWritingTimeMs || 0), 0);
 
-  document.getElementById('home-stats').innerHTML = `
-    <div class="stat-item" onclick="navigate('works')">
+  const el = document.getElementById('home-stats');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="stat-item">
       <div class="si-value">${totalWords.toLocaleString()}</div>
       <div class="si-label">字数</div>
     </div>
-    <div class="stat-item" onclick="navigate('works')">
+    <div class="stat-item">
       <div class="si-value">${formatTimeShort(totalTime)}</div>
       <div class="si-label">时长</div>
     </div>
-    <div class="stat-item" onclick="navigate('works')">
+    <div class="stat-item">
       <div class="si-value">${novels.length}</div>
       <div class="si-label">作品</div>
     </div>
-    <div class="stat-item" onclick="navigate('ideas')">
+    <div class="stat-item">
       <div class="si-value">${ideas.length}</div>
       <div class="si-label">灵感</div>
     </div>
   `;
+}
 
-  // Recent items
-  const allItems = [...works].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  const recent = allItems.slice(0, 5);
+// ============================================================
+// 标签
+// ============================================================
+function getAllTags() {
+  const set = new Set();
+  DB.getWorks().forEach(w => (w.tags || []).forEach(t => set.add(t)));
+  return [...set].sort((a, b) => a.localeCompare(b, 'zh'));
+}
 
-  const recentEl = document.getElementById('home-recent');
-  if (recent.length === 0) {
-    recentEl.innerHTML = '<div class="empty-state" style="padding:32px 20px"><div class="empty-icon">-</div><div class="empty-text">还没有作品，开始写吧</div></div>';
-  } else {
-    recentEl.innerHTML = recent.map(w => {
-      const typeLabel = w.type === 'novel' ? '小说' : '灵感';
-      const wordCount = countChars(w.content || '');
-      return `<div class="recent-item" onclick="${w.type === 'novel' ? `navigate('editor','id=${w.id}')` : `navigate('idea-editor','id=${w.id}')`}">
-        <div>
-          <div class="ri-title">${escapeHtml(w.title || '未命名')}</div>
-          <div class="ri-meta">${typeLabel} · ${wordCount} 字</div>
-        </div>
-        <div class="ri-meta">${formatDate(w.updatedAt)}</div>
-      </div>`;
-    }).join('');
-  }
+function updateWorkTags(workId, mutate) {
+  const works = DB.getWorks();
+  const w = works.find(x => x.id === workId);
+  if (!w) return;
+  if (!Array.isArray(w.tags)) w.tags = [];
+  mutate(w);
+  w.updatedAt = new Date().toISOString();
+  DB.saveWorks(works);
+}
 
-  // Render theme dots
-  renderThemeDots();
+// 渲染编辑器里的标签行
+function renderTagEditor(containerId, workId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const w = DB.getWorks().find(x => x.id === workId);
+  if (!w) { el.innerHTML = ''; return; }
+  const tags = w.tags || [];
+  el.innerHTML =
+    tags.map((t, i) =>
+      `<span class="tag-chip"><span class="tag-name">${escapeHtml(t)}</span>` +
+      `<button class="tag-x" title="删除标签" onclick="removeTagAt('${containerId}','${workId}',${i})">×</button></span>`
+    ).join('') +
+    `<button class="tag-add-btn" onclick="openTagInput('${containerId}','${workId}')">+ 标签</button>`;
+}
+
+function openTagInput(containerId, workId) {
+  const el = document.getElementById(containerId);
+  const btn = el && el.querySelector('.tag-add-btn');
+  if (!btn) return;
+  const input = document.createElement('input');
+  input.className = 'tag-input';
+  input.placeholder = '标签名';
+  input.maxLength = 16;
+  input.onkeydown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      input.onblur = null;               // 别让 blur 再触发一次
+      const v = input.value.trim();
+      if (v) addTagTo(containerId, workId, v);
+      else renderTagEditor(containerId, workId);
+    } else if (e.key === 'Escape') {
+      input.onblur = null;
+      renderTagEditor(containerId, workId);
+    }
+  };
+  input.onblur = () => {
+    const v = input.value.trim();
+    if (v) addTagTo(containerId, workId, v);
+    else renderTagEditor(containerId, workId);
+  };
+  btn.replaceWith(input);
+  input.focus();
+}
+
+function addTagTo(containerId, workId, tag) {
+  const t = tag.trim().replace(/^#/, '');
+  if (!t) { renderTagEditor(containerId, workId); return; }
+  if (t.length > 16) { toast('标签太长了，16 字以内'); return; }
+  updateWorkTags(workId, w => {
+    if (!w.tags.includes(t)) w.tags.push(t);
+  });
+  renderTagEditor(containerId, workId);
+  renderWorksTagFilter();
+}
+
+function removeTagAt(containerId, workId, idx) {
+  updateWorkTags(workId, w => { w.tags.splice(idx, 1); });
+  renderTagEditor(containerId, workId);
+  renderWorksTagFilter();
+}
+
+// 作品页顶部的标签筛选栏（用索引而非标签名传参，避免引号把 onclick 拆坏）
+function renderWorksTagFilter() {
+  const el = document.getElementById('works-tags');
+  if (!el) return;
+  const all = getAllTags();
+  if (!all.length) { el.innerHTML = ''; return; }
+  el.innerHTML = all.map((t, i) =>
+    `<button class="cat-chip ${state.tagFilter.includes(t) ? 'active' : ''}" onclick="toggleTagFilterAt(${i})">#${escapeHtml(t)}</button>`
+  ).join('');
+}
+
+function toggleTagFilterAt(i) {
+  const t = getAllTags()[i];
+  if (!t) return;
+  const idx = state.tagFilter.indexOf(t);
+  if (idx >= 0) state.tagFilter.splice(idx, 1);
+  else state.tagFilter.push(t);
+  renderWorks();
 }
 
 // ============================================================
@@ -1086,9 +1407,17 @@ function renderHome() {
 // ============================================================
 function renderWorks() {
   const works = DB.getWorks();
+  // 灵感有自己的底部 tab，作品页不再单独筛灵感；「全部」= 小说 + 灵感
   let filtered = works.filter(w => w.type === 'novel');
-  if (state.worksFilter === 'idea') filtered = works.filter(w => w.type === 'idea');
   if (state.worksFilter === 'all') filtered = works;
+
+  // 标签筛选：多选 = 同时含有所选的全部标签
+  if (state.tagFilter.length) {
+    filtered = filtered.filter(w => {
+      const tags = w.tags || [];
+      return state.tagFilter.every(t => tags.includes(t));
+    });
+  }
 
   filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
@@ -1099,8 +1428,12 @@ function renderWorks() {
     btn.classList.toggle('active-filter', btn.dataset.filter === state.worksFilter);
   });
 
+  renderWorksTagFilter();
+  renderStats();
+
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">-</div><div class="empty-text">这里还没有内容</div></div>';
+    const emptyText = state.tagFilter.length ? '没有同时带这些标签的作品' : '这里还没有内容';
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">-</div><div class="empty-text">${emptyText}</div></div>`;
     return;
   }
 
@@ -1111,6 +1444,7 @@ function renderWorks() {
     return `<div class="card" onclick="navigate('${w.type === 'novel' ? 'editor' : 'idea-editor'}','id=${w.id}')">
       <button class="card-delete" onclick="event.stopPropagation();confirmDeleteWork('${w.id}')">×</button>
       <div class="card-title">${escapeHtml(w.title || '未命名')}</div>
+      ${(w.tags || []).length ? `<div class="card-tags">${w.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       <div class="card-footer">
         <span class="card-type">${typeEmoji} ${typeLabel}</span>
         <span class="cf-divider">·</span>
@@ -1133,7 +1467,6 @@ function confirmDeleteWork(id) {
     works = works.filter(w => w.id !== id);
     DB.saveWorks(works);
     renderWorks();
-    renderHome();
   });
 }
 
@@ -1167,15 +1500,7 @@ function initEditor(id) {
     lastSaved.textContent = '最后保存：' + formatDate(work.updatedAt);
   } else {
     // Create new work
-    work = {
-      id: DB.genId(),
-      title: '',
-      type: 'novel',
-      content: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      totalWritingTimeMs: 0,
-    };
+    work = makeWork('novel');
     const works = DB.getWorks();
     works.push(work);
     DB.saveWorks(works);
@@ -1189,6 +1514,7 @@ function initEditor(id) {
 
   state.lastContent = contentArea.value;
   updateWordCount();
+  renderTagEditor('editor-tags', work.id);
 
   // Start timer
   startTimer();
@@ -1220,6 +1546,19 @@ function initEditor(id) {
       saveCurrentWork();
     }
   };
+
+  // 划选文字时，把 AI 按钮换成实际字数——点开就默认分析这一段
+  let lastSelLen = -1;
+  const syncAIBtn = () => {
+    const sel = getEditorSelection();
+    if (sel.length === lastSelLen) return;
+    lastSelLen = sel.length;
+    const btn = document.getElementById('btn-ai');
+    if (btn) btn.textContent = sel ? `AI 改这段 (${sel.length} 字)` : 'AI 改文';
+  };
+  contentArea.addEventListener('mouseup', syncAIBtn);
+  contentArea.addEventListener('keyup', syncAIBtn);
+  syncAIBtn();
 
   // Focus content area
   setTimeout(() => contentArea.focus(), 100);
@@ -1374,6 +1713,7 @@ function renderIdeas() {
     return `<div class="card" onclick="navigate('idea-editor','id=${w.id}')">
       <button class="card-delete" onclick="event.stopPropagation();confirmDeleteIdea('${w.id}')">×</button>
       <div class="card-title">${escapeHtml(w.title || '未命名灵感')}</div>
+      ${(w.tags || []).length ? `<div class="card-tags">${w.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
       <div class="card-excerpt">${escapeHtml(excerpt) || '暂无内容'}</div>
       <div class="card-footer">
         <span class="card-type">✨ 灵感</span>
@@ -1390,7 +1730,7 @@ function confirmDeleteIdea(id) {
     works = works.filter(w => w.id !== id);
     DB.saveWorks(works);
     renderIdeas();
-    renderHome();
+    renderStats();
   });
 }
 
@@ -1401,33 +1741,24 @@ function initIdeaEditor(id) {
   const titleInput = document.getElementById('idea-editor-title');
   const contentArea = document.getElementById('idea-editor-content');
 
-  if (id) {
+  let idea = id ? DB.getWorks().find(w => w.id === id) : null;
+
+  if (idea) {
+    titleInput.value = idea.title || '';
+    contentArea.value = idea.content || '';
+  } else {
+    // New idea
+    idea = makeWork('idea');
     const works = DB.getWorks();
-    const idea = works.find(w => w.id === id);
-    if (idea) {
-      titleInput.value = idea.title || '';
-      contentArea.value = idea.content || '';
-      return;
-    }
+    works.push(idea);
+    DB.saveWorks(works);
+    state.currentIdeaId = idea.id;
+    titleInput.value = '';
+    contentArea.value = '';
+    setTimeout(() => contentArea.focus(), 100);
   }
 
-  // New idea
-  const idea = {
-    id: DB.genId(),
-    title: '',
-    type: 'idea',
-    content: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    totalWritingTimeMs: 0,
-  };
-  const works = DB.getWorks();
-  works.push(idea);
-  DB.saveWorks(works);
-  state.currentIdeaId = idea.id;
-  titleInput.value = '';
-  contentArea.value = '';
-  setTimeout(() => contentArea.focus(), 100);
+  renderTagEditor('idea-tags', idea.id);
 }
 
 function saveIdeaEdit() {
@@ -1462,15 +1793,7 @@ function deleteCurrentIdea() {
 function createNewWork() {
   // Create a blank work and navigate to editor
   const works = DB.getWorks();
-  const work = {
-    id: DB.genId(),
-    title: '',
-    type: 'novel',
-    content: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    totalWritingTimeMs: 0,
-  };
+  const work = makeWork('novel');
   works.push(work);
   DB.saveWorks(works);
   navigate('editor', 'id=' + work.id);
@@ -1478,31 +1801,391 @@ function createNewWork() {
 
 function createNewIdea() {
   const works = DB.getWorks();
-  const idea = {
-    id: DB.genId(),
-    title: '',
-    type: 'idea',
-    content: '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    totalWritingTimeMs: 0,
-  };
+  const idea = makeWork('idea');
   works.push(idea);
   DB.saveWorks(works);
   navigate('idea-editor', 'id=' + idea.id);
 }
 
 // ============================================================
-// 文梗（抽签 / 对决 / 题库 / 收藏）
+// AI 改文
 // ============================================================
-const crownSvg = '<svg class="champ-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 18h18M5 9l4 3 3-7 3 7 4-3-1 9H6z"/></svg>';
+const AI_DEFAULTS = {
+  base: 'https://api.deepseek.com/v1/chat/completions',
+  model: 'deepseek-v4-flash',
+};
+
+const WriterAI = {
+  getConfig() {
+    return {
+      key: localStorage.getItem('writing_ai_key') || '',
+      base: localStorage.getItem('writing_ai_base') || AI_DEFAULTS.base,
+      model: localStorage.getItem('writing_ai_model') || AI_DEFAULTS.model,
+    };
+  },
+  saveConfig(cfg) {
+    localStorage.setItem('writing_ai_key', (cfg.key || '').trim());
+    localStorage.setItem('writing_ai_base', (cfg.base || '').trim() || AI_DEFAULTS.base);
+    localStorage.setItem('writing_ai_model', (cfg.model || '').trim() || AI_DEFAULTS.model);
+  },
+  hasKey() { return !!this.getConfig().key; },
+
+  async chat(messages, timeoutMs) {
+    const { key, base, model } = this.getConfig();
+    if (!key) throw new Error('还没填 API Key。去底部「我的」页填一下。');
+
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs || 60000);
+    let res;
+    try {
+      res = await fetch(base, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + key,
+        },
+        body: JSON.stringify({ model, messages, temperature: 0.8, max_tokens: 2048, stream: false }),
+        signal: ctrl.signal,
+      });
+    } catch (err) {
+      clearTimeout(timer);
+      if (err && err.name === 'AbortError') throw new Error('等太久了，一分钟还没回应。检查一下网络再试。');
+      throw new Error('连不上接口。看看网络，或者确认「我的」页里的接口地址没写错。');
+    }
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      let detail = '';
+      try {
+        const errBody = await res.json();
+        if (errBody && errBody.error && errBody.error.message) detail = errBody.error.message;
+      } catch (e) {}
+      if (res.status === 401 || res.status === 403) throw new Error('API Key 不对，或者没有权限。' + (detail ? '（' + detail + '）' : ''));
+      if (res.status === 402) throw new Error('账户余额不足了，去平台上充一点。');
+      if (res.status === 429) throw new Error('请求太频繁，缓一会儿再试。');
+      if (res.status >= 500) throw new Error('接口那边出错了（' + res.status + '），等会儿再试。');
+      throw new Error('请求失败（' + res.status + '）' + (detail ? '：' + detail : ''));
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch (e) {
+      throw new Error('返回的东西读不懂，接口地址可能填错了。');
+    }
+    const msg = data && data.choices && data.choices[0] && data.choices[0].message;
+    if (!msg || !msg.content) throw new Error('它没返回内容，再试一次。');
+    return msg.content;
+  },
+};
+
+// ---------- 提示词 ----------
+const AI_SYSTEM_PROMPT = `你是一个短篇小说作家，熟悉我的文风。
+我不喜欢华丽的辞藻，不喜欢过分煽情，喜欢戛然而止，喜欢起起落落的情绪，喜欢 1v1。
+
+现在我在改自己的稿子，你帮我看看还能怎么改。
+
+【最重要的一条】只告诉我问题在哪、可以往哪个方向想。绝对不要给我改写好的句子——一个完整的句子都不要给。
+我不要现成的答案，给了句子就是帮倒忙，我会被你的措辞带着走。
+
+每次回答按这三段来：
+1. 先说这篇里最值得留下的一处是什么，具体到哪一句、哪个词、为什么它成立
+2. 再说问题在哪：哪里是在解释情绪而不是让读者自己感觉到、哪里煽情过头了、哪里辞藻堆了、哪里收得太满没做到戛然而止、哪里的情绪没有起落
+3. 最后给一到三个方向性的提示，让我自己动笔
+
+像同行之间聊稿子那样说话，直接一点，不用客气，也不用夸我。用中文。`;
+
+// 太长了就掐中间：保住开头和结尾，短篇的结尾最要紧
+function clipText(text, limit) {
+  if (text.length <= limit) return text;
+  const headLen = Math.floor(limit * 0.6);
+  const tailLen = limit - headLen;
+  return text.slice(0, headLen) + '\n\n……（中间省略）……\n\n' + text.slice(-tailLen);
+}
+
+function buildReviewMessages(mode, fullText, selection, extra) {
+  const full = clipText(fullText, 12000);
+  let user;
+  if (mode === 'selection') {
+    user = `我的全文如下，用来了解我的文风，不要动它：
+---
+${full}
+---
+
+我要改的是其中这一段：
+---
+${clipText(selection, 4000)}
+---
+
+只针对这一段谈：放在我整篇的调子里，它哪里偏了、哪里还能更好、有什么方向可以想。再说一次，不要给我改好的句子。`;
+  } else {
+    user = `我的稿子全文如下：
+---
+${full}
+---
+
+通篇看一遍，说说怎么改。`;
+  }
+  if (extra && extra.trim()) user += `\n\n另外我还想问：${extra.trim()}`;
+  return [
+    { role: 'system', content: AI_SYSTEM_PROMPT },
+    { role: 'user', content: user },
+  ];
+}
+
+// ---------- 极简 Markdown 渲染 ----------
+// 整段先转义再做有限替换，AI 输出里的 HTML 永远不会被执行
+function renderMarkdown(text) {
+  const inline = (s) => s
+    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+  const lines = escapeHtml(text).split('\n');
+  let html = '';
+  let inList = false;
+  const closeList = () => { if (inList) { html += '</ul>'; inList = false; } };
+
+  for (const rawLine of lines) {
+    const line = rawLine.replace(/\s+$/, '');
+    if (!line.trim()) { closeList(); continue; }
+
+    let m;
+    if ((m = line.match(/^\s*#{1,6}\s+(.*)$/))) {
+      closeList();
+      html += `<h4>${inline(m[1])}</h4>`;
+    } else if ((m = line.match(/^\s*[-*+]\s+(.*)$/))) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${inline(m[1])}</li>`;
+    } else if ((m = line.match(/^\s*\d+[.、)]\s+(.*)$/))) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${inline(m[1])}</li>`;
+    } else if ((m = line.match(/^\s*>\s?(.*)$/))) {
+      closeList();
+      html += `<blockquote>${inline(m[1])}</blockquote>`;
+    } else {
+      closeList();
+      html += `<p>${inline(line)}</p>`;
+    }
+  }
+  closeList();
+  return html;
+}
+
+// ---------- AI 抽屉 ----------
+let aiState = { mode: 'full', result: '', busy: false };
+
+function getEditorSelection() {
+  const ta = document.getElementById('editor-content');
+  if (!ta) return '';
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  if (typeof s !== 'number' || typeof e !== 'number' || e <= s) return '';
+  return ta.value.slice(s, e);
+}
+
+function renderAIBody(html) {
+  const el = document.getElementById('ai-body');
+  if (el) el.innerHTML = html;
+}
+
+function openAISheet() {
+  const sel = getEditorSelection();
+  aiState.result = '';
+  aiState.mode = sel ? 'selection' : 'full';
+  const q = document.getElementById('ai-question');
+  if (q) q.value = '';
+  const copyBtn = document.getElementById('btn-ai-copy');
+  if (copyBtn) copyBtn.style.display = 'none';
+  renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">选一个模式，让它看看</div></div>');
+  syncAIModes();
+  document.getElementById('ai-sheet-overlay').classList.add('show');
+}
+
+function closeAISheet() {
+  const el = document.getElementById('ai-sheet-overlay');
+  if (el) el.classList.remove('show');
+}
+
+function syncAIModes() {
+  const sel = getEditorSelection();
+  document.querySelectorAll('.ai-mode').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === aiState.mode);
+  });
+  const hint = document.getElementById('ai-sel-hint');
+  if (hint) hint.textContent = sel ? sel.length + ' 字' : '没选中';
+}
+
+function setAIMode(mode) {
+  if (mode === 'selection' && !getEditorSelection()) {
+    toast('先在正文里划一段');
+    return;
+  }
+  aiState.mode = mode;
+  syncAIModes();
+}
+
+async function runAIReview() {
+  if (aiState.busy) return;
+
+  const ta = document.getElementById('editor-content');
+  const fullText = ta ? ta.value : '';
+  if (!fullText.trim()) { toast('正文还是空的'); return; }
+
+  const selection = getEditorSelection();
+  if (aiState.mode === 'selection' && !selection) { toast('先在正文里划一段'); return; }
+
+  const extra = (document.getElementById('ai-question') || {}).value || '';
+  const btn = document.getElementById('btn-ai-run');
+  const copyBtn = document.getElementById('btn-ai-copy');
+
+  aiState.busy = true;
+  btn.disabled = true;
+  btn.textContent = '分析中…';
+  copyBtn.style.display = 'none';
+  renderAIBody(
+    '<div class="ai-loading"><div class="ai-spinner"></div>' +
+    '<div class="ai-loading-text">正在读你的稿子……通常十几秒</div></div>'
+  );
+
+  try {
+    const result = await WriterAI.chat(buildReviewMessages(aiState.mode, fullText, selection, extra));
+    aiState.result = result;
+    renderAIBody('<div class="ai-md">' + renderMarkdown(result) + '</div>');
+    copyBtn.style.display = '';
+  } catch (err) {
+    aiState.result = '';
+    renderAIBody('<div class="ai-error">' + escapeHtml(err.message) + '</div>');
+  } finally {
+    aiState.busy = false;
+    btn.disabled = false;
+    btn.textContent = '开始分析';
+  }
+}
+
+function copyAIResult() {
+  if (!aiState.result) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(aiState.result)
+      .then(() => toast('已复制'))
+      .catch(() => toast('复制失败，手动选一下吧'));
+  } else {
+    toast('这个浏览器不支持自动复制');
+  }
+}
+
+// ---------- 我的 ----------
+function renderMe() {
+  const cfg = WriterAI.getConfig();
+  const keyEl = document.getElementById('ai-key');
+  const baseEl = document.getElementById('ai-base');
+  const modelEl = document.getElementById('ai-model');
+  if (keyEl) { keyEl.value = cfg.key; keyEl.type = 'password'; }
+  if (baseEl) baseEl.value = cfg.base;
+  if (modelEl) modelEl.value = cfg.model;
+  const toggle = document.getElementById('ai-key-toggle');
+  if (toggle) toggle.textContent = '显示';
+  renderThemeDots();
+}
+
+function toggleKeyVisible() {
+  const el = document.getElementById('ai-key');
+  const btn = document.getElementById('ai-key-toggle');
+  if (!el || !btn) return;
+  const show = el.type === 'password';
+  el.type = show ? 'text' : 'password';
+  btn.textContent = show ? '隐藏' : '显示';
+}
+
+function saveAIConfig() {
+  const val = (id) => (document.getElementById(id) || {}).value || '';
+  WriterAI.saveConfig({ key: val('ai-key'), base: val('ai-base'), model: val('ai-model') });
+  toast(WriterAI.hasKey() ? '已保存' : '已保存，但还没填 Key');
+}
+
+async function testAIConnection() {
+  const btn = document.getElementById('btn-test-ai');
+  if (!btn || btn.disabled) return;
+  saveAIConfig();
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '测试中…';
+  try {
+    await WriterAI.chat([{ role: 'user', content: '只回一个字：好' }], 20000);
+    toast('连接正常');
+  } catch (err) {
+    toast(err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = orig;
+  }
+}
+
+// ---------- 数据备份 ----------
+function exportAllData() {
+  const dump = {
+    app: '笔间',
+    version: APP_VERSION,
+    exportedAt: new Date().toISOString(),
+    works: DB.getWorks(),
+    prompts: DB.getPrompts(),
+    hidden: DB.getHidden(),
+    collected: DB.getCollected(),
+    settings: DB.getSettings(),
+  };
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '笔间备份-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('备份已导出');
+}
+
+function importAllData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let dump;
+      try { dump = JSON.parse(reader.result); } catch (e) { toast('这个文件读不出来'); return; }
+      if (!dump || !Array.isArray(dump.works)) { toast('不是笔间的备份文件'); return; }
+      const nowCount = DB.getWorks().length;
+      showModal(
+        '导入备份',
+        `会覆盖现在的 ${nowCount} 条内容，换成备份里的 ${dump.works.length} 条。确定吗？`,
+        () => {
+          DB.saveWorks(dump.works.map(w => ({ ...w, tags: Array.isArray(w.tags) ? w.tags : [] })));
+          if (Array.isArray(dump.prompts)) DB.savePrompts(dump.prompts);
+          if (Array.isArray(dump.hidden)) DB.saveHidden(dump.hidden);
+          if (Array.isArray(dump.collected)) DB.saveCollected(dump.collected);
+          if (dump.settings) DB.saveSettings(dump.settings);
+          toast('导入完成');
+          navigate('works');
+        },
+        '确定导入'
+      );
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// ============================================================
+// 文梗（抽签 / 题库 / 收藏）
+// ============================================================
 
 function toast(msg) {
   let el = document.getElementById('app-toast');
   if (!el) {
     el = document.createElement('div');
     el.id = 'app-toast';
-    el.style.cssText = 'position:fixed;left:50%;bottom:60px;transform:translateX(-50%);background:rgba(29,29,31,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:.82rem;z-index:300;transition:opacity .3s;pointer-events:none;max-width:80vw;';
+    el.style.cssText = 'position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(29,29,31,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:.82rem;z-index:300;transition:opacity .3s;pointer-events:none;max-width:80vw;';
     document.body.appendChild(el);
   }
   el.textContent = msg;
@@ -1513,15 +2196,10 @@ function toast(msg) {
 
 function createWorkFromPrompt(title, intro) {
   const works = DB.getWorks();
-  const work = {
-    id: DB.genId(),
+  const work = makeWork('novel', {
     title: title || '未命名',
-    type: 'novel',
     content: intro ? `梗 · ${intro}\n\n` : '',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    totalWritingTimeMs: 0,
-  };
+  });
   works.push(work);
   DB.saveWorks(works);
   navigate('editor', 'id=' + work.id);
@@ -1552,7 +2230,6 @@ function renderPromptsPage() {
     panel.classList.toggle('active', panel.dataset.panel === state.promptsTab);
   });
   if (state.promptsTab === 'draw') renderDrawPanel();
-  else if (state.promptsTab === 'battle') renderBattle();
   else if (state.promptsTab === 'pool') renderPool();
   else if (state.promptsTab === 'collected') renderCollected();
 }
@@ -1644,148 +2321,6 @@ function collectCombo() {
 function writeFromCombo() {
   if (!state.combo) return;
   createWorkFromPrompt(comboTitle(), comboTitle());
-}
-
-// ---------- 对决（关键词 PK） ----------
-function startBattle() {
-  // 对决只用世界观/人物/设定/情节，排除「形式」（写法规矩不适合对打）
-  const pool = pickRandomN(getAllPrompts().filter(p => p.category !== '形式'), 8);
-  if (pool.length < 2) { toast('题库不够，先去题库加几个文梗'); return; }
-  state.battle = {
-    phase: 'fight', round: 0, matchIdx: 0, _picking: false,
-    players: pool, winners: [], champion: null,
-    currentPair: [pool[0], pool[1]],
-  };
-  saveBattleSession();
-  renderBattle();
-}
-
-function battleMatchLabel() {
-  const b = state.battle;
-  const total = b.players.length / 2;
-  const names = b.round === 0 ? '八强' : b.round === 1 ? '半决赛' : '决赛';
-  return b.round === 2 ? names : `${names} · 第 ${Math.min(b.matchIdx + 1, total)}/${total} 场`;
-}
-
-function renderBattle() {
-  const root = document.getElementById('battle-root');
-  if (!root) return;
-  if (!state.battle && sessionStorage.getItem('writing_battle_session')) restoreBattleSession();
-  const b = state.battle;
-  if (!b || b.phase === 'idle') {
-    root.innerHTML = `
-      <div class="vs-stage">
-        <div class="empty-state" style="padding:48px 20px;">
-          <div style="opacity:.35;">${crownSvg}</div>
-          <div class="empty-text" style="font-size:1rem;">八强集结，谁是你的王牌？</div>
-        </div>
-        <button class="btn btn-primary" onclick="startBattle()">开始对决</button>
-      </div>`;
-    return;
-  }
-  if (b.phase === 'champion') {
-    const kw = b.champion ? escapeHtml(b.champion.keyword) : '';
-    root.innerHTML = `
-      <div class="vs-stage">
-        <div class="champ-icon">${crownSvg}</div>
-        <div class="champ-title">本期王牌 · ${kw}</div>
-        <div class="champ-sub">8 强 → 冠军</div>
-        <div class="btn-group" style="justify-content:center;">
-          <button class="btn btn-primary" onclick="writeBattleChampion()">开写</button>
-          <button class="btn" onclick="collectBattleChampion()">收藏</button>
-          <button class="btn" onclick="restartBattle()">再来一局</button>
-          <button class="btn" onclick="exitBattle()">退出</button>
-        </div>
-      </div>`;
-    return;
-  }
-  const [a, b2] = b.currentPair;
-  root.innerHTML = `
-    <div style="text-align:center;margin-bottom:6px;"><span class="match-label">${battleMatchLabel()}</span></div>
-    <div class="vs-pair">
-      <div class="vs-card" onclick="pickBattle(0)">
-        <div class="vs-kw">${escapeHtml(a.keyword)}</div>
-        <div class="vs-cat">${escapeHtml(a.category)}</div>
-      </div>
-      <div class="vs-verse">VS</div>
-      <div class="vs-card" onclick="pickBattle(1)">
-        <div class="vs-kw">${escapeHtml(b2.keyword)}</div>
-        <div class="vs-cat">${escapeHtml(b2.category)}</div>
-      </div>
-    </div>
-    <div class="btn-group" style="justify-content:center;margin-top:8px;">
-      <button class="btn btn-sm" onclick="confirmRestartBattle()">重新开局</button>
-      <button class="btn btn-sm" onclick="confirmExitBattle()">退出对决</button>
-    </div>`;
-}
-
-function pickBattle(idx) {
-  const b = state.battle;
-  if (!b || b.phase !== 'fight' || b._picking) return;
-  b._picking = true;
-  const cards = document.querySelectorAll('#battle-root .vs-card');
-  if (cards.length === 2) {
-    cards[idx].classList.add('picked');
-    cards[1 - idx].classList.add('eliminated');
-  }
-  const winner = b.currentPair[idx];
-  setTimeout(() => {
-    b.winners.push(winner);
-    const perRound = b.players.length / 2;
-    if (b.winners.length === perRound) {
-      if (b.round < 2) {
-        b.round++; b.players = b.winners; b.winners = []; b.matchIdx = 0;
-      } else {
-        b.phase = 'champion'; b.champion = b.winners[0];
-        clearBattleSession();
-        b._picking = false;
-        renderBattle();
-        return;
-      }
-    } else {
-      b.matchIdx++;
-    }
-    b.currentPair = [b.players[b.matchIdx * 2], b.players[b.matchIdx * 2 + 1]];
-    b._picking = false;
-    saveBattleSession();
-    renderBattle();
-  }, 850);
-}
-
-function confirmRestartBattle() {
-  showModal('重新开局', '将重新抽取 8 个文梗，当前进度清空。确定？', () => { startBattle(); });
-}
-function confirmExitBattle() {
-  showModal('退出对决', '退出后当前进度不保留。确定退出？', () => { exitBattle(); });
-}
-function restartBattle() { startBattle(); }
-function exitBattle() {
-  state.battle = null;
-  clearBattleSession();
-  renderBattle();
-}
-function collectBattleChampion() {
-  const b = state.battle;
-  if (!b || !b.champion) return;
-  collectItem({ title: b.champion.keyword, keyword: b.champion.keyword, source: 'battle', champion: true });
-}
-function writeBattleChampion() {
-  const b = state.battle;
-  if (!b || !b.champion) return;
-  createWorkFromPrompt(b.champion.keyword, b.champion.keyword);
-}
-function saveBattleSession() {
-  try { sessionStorage.setItem('writing_battle_session', JSON.stringify(state.battle)); } catch (e) {}
-}
-function clearBattleSession() {
-  try { sessionStorage.removeItem('writing_battle_session'); } catch (e) {}
-}
-function restoreBattleSession() {
-  try {
-    const raw = sessionStorage.getItem('writing_battle_session');
-    if (raw) { state.battle = JSON.parse(raw); return true; }
-  } catch (e) {}
-  return false;
 }
 
 // ---------- 题库 ----------
@@ -2019,8 +2554,11 @@ function deleteCollected(id) {
 // KEYBOARD SHORTCUTS (global)
 // ============================================================
 document.addEventListener('keydown', (e) => {
-  // Escape to close modal
-  if (e.key === 'Escape') closeModal();
+  if (e.key !== 'Escape') return;
+  // Escape：先关 AI 抽屉，再关确认弹窗
+  const sheet = document.getElementById('ai-sheet-overlay');
+  if (sheet && sheet.classList.contains('show')) { closeAISheet(); return; }
+  closeModal();
 });
 
 // ============================================================

@@ -1,4 +1,4 @@
-const CACHE = 'write-page-v3';
+const CACHE = 'write-page-v6';
 
 // Install: cache app shell immediately
 self.addEventListener('install', e => {

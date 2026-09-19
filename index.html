@@ -212,69 +212,93 @@ header .actions { display: flex; gap: 12px; align-items: center; }
 .input-with-btn .me-input { flex: 1; min-width: 0; }
 .input-with-btn .btn { flex-shrink: 0; }
 
-/* ===== AI 抽屉 ===== */
-.ai-sheet-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.25);
-  display: none; align-items: flex-end; justify-content: center; z-index: 200;
-}
-.ai-sheet-overlay.show { display: flex; }
-.ai-sheet {
-  width: 100%; max-width: 720px; max-height: 82vh;
-  background: var(--bg); border-radius: var(--radius) var(--radius) 0 0;
-  display: flex; flex-direction: column;
-  padding: 0 20px calc(16px + env(safe-area-inset-bottom));
-  animation: slideUp .26s ease;
-  box-shadow: 0 -8px 32px rgba(0,0,0,.14);
-}
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.ai-sheet-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 14px; flex-shrink: 0;
-}
-.ai-sheet-title { font-size: 1rem; font-weight: 600; }
-.ai-sheet-close {
-  border: none; background: none; color: var(--text-tertiary); font-size: 1.3rem;
-  cursor: pointer; line-height: 1; padding: 0 4px; font-family: inherit;
-}
-.ai-sheet-close:hover { color: var(--text); }
-.ai-modes { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
-.ai-mode {
-  flex: 1; padding: 9px 10px; border-radius: var(--radius-sm);
-  border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary);
-  font-size: .84rem; font-family: inherit; cursor: pointer; transition: all var(--transition);
-}
-.ai-mode.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); font-weight: 600; }
-.ai-mode-sub { display: block; font-size: .68rem; color: var(--text-tertiary); font-weight: 400; margin-top: 2px; }
-.ai-extra { margin-bottom: 12px; flex-shrink: 0; }
-.ai-body {
-  flex: 1; overflow-y: auto; min-height: 120px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 16px; margin-bottom: 12px;
-}
-.ai-foot { display: flex; gap: 8px; flex-shrink: 0; }
-.ai-foot .btn { flex: 1; justify-content: center; }
-/* 分析记录：一排可切换的 chip。抽屉是 flex column，这里必须 flex-shrink:0 才不会被 body 挤扁 */
-.ai-history { display: flex; flex-wrap: wrap; gap: 6px; flex-shrink: 0; margin-bottom: 10px; }
-.ai-history:empty { display: none; }   /* 没有记录时不占位，行为跟加这个功能之前一样 */
-.ai-analysis-head {
+/* ===== 改文页（对话） ===== */
+.polish-pick { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.polish-pick-label { font-size: .8rem; color: var(--text-tertiary); flex-shrink: 0; }
+.polish-select { flex: 1; min-width: 0; }
+
+.polish-text-head {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border);
+  padding: 10px 14px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: .86rem; font-weight: 600; cursor: pointer;
+  transition: border-color var(--transition);
 }
-.ai-analysis-title { font-size: .74rem; color: var(--text-tertiary); }
-.ai-analysis-del {
-  border: none; background: none; padding: 2px 4px; cursor: pointer; font-family: inherit;
-  font-size: .74rem; color: var(--text-tertiary); transition: color var(--transition);
+.polish-text-head:hover { border-color: var(--accent); }
+.polish-text-meta { font-size: .72rem; color: var(--text-tertiary); font-weight: 400; }
+#polish-text-chevron { display: inline-block; transition: transform var(--transition); }
+.polish-textarea {
+  width: 100%; min-height: 220px; margin-top: 8px; padding: 14px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); font-family: inherit;
+  font-size: .9rem; line-height: 1.9; resize: vertical;
 }
-.ai-analysis-del:hover { color: #e05252; }
-.ai-analysis-q {
-  font-size: .78rem; color: var(--text-secondary); background: var(--bg);
-  border-left: 2px solid var(--border); padding: 6px 10px; border-radius: 0 4px 4px 0; margin-bottom: 10px;
+.polish-textarea:focus { outline: none; border-color: var(--accent); }
+.polish-text-foot { display: flex; justify-content: space-between; font-size: .72rem; color: var(--text-tertiary); padding: 4px 2px 0; }
+#polish-save-status { color: var(--accent); }
+
+.polish-thread { display: flex; flex-direction: column; gap: 14px; padding: 18px 0 4px; }
+.polish-empty { text-align: center; color: var(--text-tertiary); font-size: .82rem; line-height: 1.9; padding: 40px 16px; }
+.polish-row { display: flex; gap: 8px; align-items: flex-start; }
+.polish-row.me { justify-content: flex-end; }
+.polish-avatar {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+  background: var(--accent-light); color: var(--text);
+  display: flex; align-items: center; justify-content: center; font-size: .78rem;
 }
-/* 结果排版 */
+.polish-bubble { max-width: 84%; padding: 10px 14px; font-size: .88rem; line-height: 1.8; }
+.polish-bubble.you {
+  background: var(--accent-light); color: var(--text); word-break: break-word;
+  border-radius: var(--radius) var(--radius) 4px var(--radius);
+}
+.polish-bubble.her {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) var(--radius) 4px;
+}
+.polish-you-text { white-space: pre-wrap; }
+.polish-quote {
+  font-size: .76rem; color: var(--text-secondary); background: var(--bg);
+  border-left: 2px solid var(--accent); padding: 6px 10px; border-radius: 0 4px 4px 0;
+  margin-bottom: 8px; white-space: pre-wrap;
+}
+.polish-who { font-size: .7rem; color: var(--text-tertiary); margin-bottom: 6px; }
+.polish-typing { font-size: .84rem; color: var(--text-tertiary); }
+.polish-err { color: #c44; }
+.polish-acts { display: flex; gap: 14px; margin-top: 10px; }
+.polish-act {
+  border: none; background: none; padding: 0; font-family: inherit;
+  font-size: .72rem; color: var(--text-tertiary); cursor: pointer; transition: color var(--transition);
+}
+.polish-act:hover { color: var(--text); }
+.polish-act.del:hover { color: #e05252; }
+
+/* 输入框跟着走：一条条聊下去以后，她不该每次往下翻半页才能说话。
+   bottom 让开底部导航（差不多 58px 高，再算上刘海屏的安全区）。 */
+.polish-bar {
+  display: flex; gap: 8px; align-items: center;
+  position: sticky; bottom: calc(58px + env(safe-area-inset-bottom)); z-index: 40;
+  margin-top: 14px; padding: 10px 0;
+  background: var(--bg);
+}
+.polish-sel-chip {
+  flex-shrink: 0; max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-tertiary);
+  font-family: inherit; font-size: .72rem; padding: 8px 11px; border-radius: 999px; cursor: pointer;
+  transition: all var(--transition);
+}
+.polish-sel-chip.on { border-color: var(--accent); color: var(--text); background: var(--accent-light); }
+.polish-input {
+  flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--surface); color: var(--text);
+  font-family: inherit; font-size: .88rem;
+}
+.polish-input:focus { outline: none; border-color: var(--accent); }
+
+/* 结果排版（对话气泡里的正文） */
 .ai-md { font-size: .88rem; line-height: 1.85; color: var(--text); }
 .ai-md h3, .ai-md h4, .ai-md h5 { font-size: .92rem; margin: 16px 0 8px; font-weight: 600; }
 .ai-md h3:first-child, .ai-md h4:first-child, .ai-md h5:first-child { margin-top: 0; }
 .ai-md p { margin: 0 0 10px; }
+.ai-md p:last-child { margin-bottom: 0; }
 .ai-md ul { margin: 0 0 10px; padding-left: 20px; }
 .ai-md li { margin-bottom: 5px; }
 .ai-md blockquote {
@@ -287,23 +311,6 @@ header .actions { display: flex; gap: 12px; align-items: center; }
   font-size: .84em; font-family: ui-monospace, Menlo, monospace;
 }
 .ai-md strong { font-weight: 600; }
-/* 等待 */
-.ai-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 16px; }
-.ai-spinner {
-  width: 28px; height: 28px; border: 2px solid var(--border);
-  border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.ai-loading-text { font-size: .8rem; color: var(--text-tertiary); }
-.ai-error { color: #c44; font-size: .86rem; line-height: 1.7; }
-/* 编辑器工具栏里的 AI 按钮。不用 btn-primary：cream/white 主题下 --accent 太浅，白字会看不见 */
-.ai-btn {
-  border-color: var(--accent);
-  background: var(--accent-light);
-  color: var(--text);
-  font-weight: 600;
-}
-.ai-btn:hover { border-color: var(--accent-hover); }
 
 /* ===== Stats Bar (compact) ===== */
 .stats-bar {
@@ -654,7 +661,7 @@ input[type="range"]::-moz-range-thumb {
       <div class="title"><span class="t-name">我的</span></div>
     </header>
 
-    <div class="section-header"><h2>AI 改文</h2></div>
+    <div class="section-header"><h2>改文</h2></div>
     <div class="me-card">
       <div class="me-row">
         <label class="me-label" for="ai-key">API Key</label>
@@ -672,7 +679,12 @@ input[type="range"]::-moz-range-thumb {
         <label class="me-label" for="ai-model">模型</label>
         <input type="text" class="me-input" id="ai-model" spellcheck="false" placeholder="deepseek-v4-flash">
       </div>
-      <div class="me-hint">Key 只存在这台设备的浏览器里，不会上传到任何地方。换别的模型只要改上面接口地址和模型名——国内能浏览器直连的主要是 DeepSeek 和智谱。</div>
+      <div class="me-row">
+        <label class="me-label" for="editor-name">编辑的名字</label>
+        <input type="text" class="me-input" id="editor-name" spellcheck="false" placeholder="阿笺"
+               onchange="saveEditorName(this.value)">
+      </div>
+      <div class="me-hint">「编辑的名字」是改文页里跟你聊稿子那位，改完她以后就叫这个。Key 只存在这台设备的浏览器里，不会上传到任何地方。换别的模型只要改上面接口地址和模型名——国内能浏览器直连的主要是 DeepSeek 和智谱。</div>
       <div class="btn-group" style="margin-top:14px;">
         <button class="btn btn-primary" onclick="saveAIConfig()">保存</button>
         <button class="btn" id="btn-test-ai" onclick="testAIConnection()">测试连接</button>
@@ -719,6 +731,7 @@ input[type="range"]::-moz-range-thumb {
     <header>
       <button class="back" onclick="navigate('works')">← 返回</button>
       <div class="actions">
+        <button class="btn btn-sm btn-ghost" onclick="gotoPolish()">拿去改文</button>
         <button class="btn btn-sm btn-ghost" onclick="exportWork()" id="btn-export">↓ 导出</button>
         <button class="btn btn-sm btn-ghost" onclick="deleteCurrentWork()" id="btn-delete-work" style="color:var(--text-tertiary)">× 删除</button>
       </div>
@@ -742,15 +755,51 @@ input[type="range"]::-moz-range-thumb {
       <div class="tool-group">
         <span class="editor-timer"><span class="timer-icon">◷</span> <span id="editor-timer">00:00:00</span></span>
       </div>
-      <div class="tool-group">
-        <button class="btn btn-sm ai-btn" id="btn-ai" onclick="openAISheet()">AI 改文</button>
-      </div>
     </div>
 
     <textarea class="editor-textarea" id="editor-content" placeholder="开始写吧……"></textarea>
 
     <div class="editor-footer">
       <span class="ef-meta" id="editor-last-saved"></span>
+    </div>
+  </section>
+
+  <!-- ===== 改文 =====
+       以前这个功能是编辑器里的一个抽屉：点一下、出一份诊断、关掉，就没了。
+       现在挪出来单独一页 —— 它是个对话，不是一份报告：她提意见，你可以同意也可以反驳，
+       一篇稿子的来回都留在记录里，随时回看、随时删。
+       【铁律】她只指方向，绝不替你把句子写出来；原文永远是你自己动手改。 -->
+  <section id="page-polish" class="page">
+    <header>
+      <div class="title"><span class="t-name">改文</span></div>
+      <div class="actions">
+        <button class="btn btn-sm btn-ghost" onclick="clearPolishThread()" style="color:var(--text-tertiary)">清空记录</button>
+      </div>
+    </header>
+
+    <div class="polish-pick">
+      <span class="polish-pick-label">改哪一篇</span>
+      <select class="me-input polish-select" id="polish-work" onchange="onPolishWorkChange(this.value)"></select>
+    </div>
+
+    <div class="polish-text-head" onclick="togglePolishText()">
+      <span>原文</span>
+      <span class="polish-text-meta">可以直接在这儿改 · 划一段给她看 <span id="polish-text-chevron">▾</span></span>
+    </div>
+    <div id="polish-text-wrap" style="display:none;">
+      <textarea class="polish-textarea" id="polish-text" placeholder="这篇还是空的"
+                oninput="onPolishTextInput()" onselect="updatePolishSelChip()"
+                onmouseup="updatePolishSelChip()" onkeyup="updatePolishSelChip()"></textarea>
+      <div class="polish-text-foot"><span id="polish-wordcount">0 字</span><span id="polish-save-status"></span></div>
+    </div>
+
+    <div class="polish-thread" id="polish-thread"></div>
+
+    <div class="polish-bar">
+      <button class="polish-sel-chip" id="polish-sel-chip" onclick="usePolishSelection()">没选中</button>
+      <input class="polish-input" id="polish-input" placeholder="跟她说点什么…" spellcheck="false"
+             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendPolish();}">
+      <button class="btn btn-primary btn-sm" id="polish-send" onclick="sendPolish()">说</button>
     </div>
   </section>
 
@@ -884,45 +933,15 @@ input[type="range"]::-moz-range-thumb {
     </div>
   </div>
 
-  <!-- ===== AI 抽屉 ===== -->
-  <div class="ai-sheet-overlay" id="ai-sheet-overlay">
-    <div class="ai-sheet">
-      <div class="ai-sheet-head">
-        <span class="ai-sheet-title">AI 改文</span>
-        <button class="ai-sheet-close" onclick="closeAISheet()">×</button>
-      </div>
-
-      <div class="ai-history" id="ai-history"></div>
-
-      <div class="ai-modes">
-        <button class="ai-mode" data-mode="selection" onclick="setAIMode('selection')">
-          选中的这段<span class="ai-mode-sub" id="ai-sel-hint">没选中</span>
-        </button>
-        <button class="ai-mode" data-mode="full" onclick="setAIMode('full')">通篇诊断</button>
-      </div>
-
-      <div class="ai-extra">
-        <input class="me-input" id="ai-question" placeholder="还想问点什么？（可不填）" spellcheck="false">
-      </div>
-
-      <div class="ai-body" id="ai-body">
-        <div class="empty-state" style="padding:28px 16px">
-          <div class="empty-text">选一个模式，让它看看</div>
-        </div>
-      </div>
-
-      <div class="ai-foot">
-        <button class="btn btn-primary" id="btn-ai-run" onclick="runAIReview()">开始分析</button>
-        <button class="btn" id="btn-ai-copy" onclick="copyAIResult()" style="display:none;">复制结果</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ===== 底部导航 ===== -->
   <nav class="bnav" id="bnav">
     <button class="bnav-item" data-nav="works" onclick="navigate('works')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 015.5 4H10l2 2h6.5A1.5 1.5 0 0120 7.5v10A1.5 1.5 0 0118.5 19h-13A1.5 1.5 0 014 17.5z"/></svg>
       作品
+    </button>
+    <button class="bnav-item" data-nav="polish" onclick="navigate('polish')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4z"/><path d="M14.5 5.5l4 4"/></svg>
+      改文
     </button>
     <button class="bnav-item" data-nav="ideas" onclick="navigate('ideas')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 00-3.5 10.9V16h7v-2.1A6 6 0 0012 3z"/><path d="M9.5 19h5"/></svg>
@@ -997,7 +1016,7 @@ const CATEGORIES = [
   { key: '形式', words: ['只写对话', '第二人称', '旁观者视角', '开放式结局', 'BE美学', '字数限定', '书信体', '倒叙', '日记体', '反转结局', '第一人称'] },
 ];
 const BUILTIN_TROPES = CATEGORIES.flatMap(c => c.words.map(w => ({ keyword: w, category: c.key })));
-const APP_VERSION = 'v2.1.0 (2026.09.17)';
+const APP_VERSION = 'v2.2.0 (2026.09.19)';
 
 // ============================================================
 // THEME SYSTEM
@@ -1111,6 +1130,10 @@ function router() {
       state.currentWorkId = p.id || null;
       initEditor(state.currentWorkId);
       break;
+    case 'polish':
+      document.getElementById('page-polish').classList.add('active');
+      renderPolishPage(p.id || '');
+      break;
     case 'ideas':
       document.getElementById('page-ideas').classList.add('active');
       renderIdeas();
@@ -1144,6 +1167,7 @@ function updateBottomNav(page) {
   nav.classList.toggle('hidden', page === 'editor' || page === 'idea-editor');
   const map = {
     works: 'works', editor: 'works',
+    polish: 'polish',
     ideas: 'ideas', 'idea-editor': 'ideas',
     prompts: 'prompts', me: 'me',
   };
@@ -1291,10 +1315,6 @@ document.getElementById('modal-confirm').addEventListener('click', () => {
 
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeModal();
-});
-
-document.getElementById('ai-sheet-overlay').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) closeAISheet();
 });
 
 // ============================================================
@@ -1575,19 +1595,6 @@ function initEditor(id) {
       saveCurrentWork();
     }
   };
-
-  // 划选文字时，把 AI 按钮换成实际字数——点开就默认分析这一段
-  let lastSelLen = -1;
-  const syncAIBtn = () => {
-    const sel = getEditorSelection();
-    if (sel.length === lastSelLen) return;
-    lastSelLen = sel.length;
-    const btn = document.getElementById('btn-ai');
-    if (btn) btn.textContent = sel ? `AI 改这段 (${sel.length} 字)` : 'AI 改文';
-  };
-  contentArea.addEventListener('mouseup', syncAIBtn);
-  contentArea.addEventListener('keyup', syncAIBtn);
-  syncAIBtn();
 
   // Focus content area
   setTimeout(() => contentArea.focus(), 100);
@@ -1908,22 +1915,6 @@ const WriterAI = {
   },
 };
 
-// ---------- 提示词 ----------
-const AI_SYSTEM_PROMPT = `你是一个短篇小说作家，熟悉我的文风。
-我不喜欢华丽的辞藻，不喜欢过分煽情，喜欢戛然而止，喜欢起起落落的情绪，喜欢 1v1。
-
-现在我在改自己的稿子，你帮我看看还能怎么改。
-
-【最重要的一条】只告诉我问题在哪、可以往哪个方向想。绝对不要给我改写好的句子——一个完整的句子都不要给。
-我不要现成的答案，给了句子就是帮倒忙，我会被你的措辞带着走。
-
-每次回答按这三段来：
-1. 先说这篇里最值得留下的一处是什么，具体到哪一句、哪个词、为什么它成立
-2. 再说问题在哪：哪里是在解释情绪而不是让读者自己感觉到、哪里煽情过头了、哪里辞藻堆了、哪里收得太满没做到戛然而止、哪里的情绪没有起落
-3. 最后给一到三个方向性的提示，让我自己动笔
-
-像同行之间聊稿子那样说话，直接一点，不用客气，也不用夸我。用中文。`;
-
 // 太长了就掐中间：保住开头和结尾，短篇的结尾最要紧
 function clipText(text, limit) {
   if (text.length <= limit) return text;
@@ -1957,7 +1948,7 @@ ${full}
   }
   if (extra && extra.trim()) user += `\n\n另外我还想问：${extra.trim()}`;
   return [
-    { role: 'system', content: AI_SYSTEM_PROMPT },
+    { role: 'system', content: buildSystemPrompt() },
     { role: 'user', content: user },
   ];
 }
@@ -1983,7 +1974,7 @@ function buildFollowupMessages(work, fromId, newQuestion, fullText) {
   );
 
   const msgs = [
-    { role: 'system', content: AI_SYSTEM_PROMPT },
+    { role: 'system', content: buildSystemPrompt() },
     base[1],
     { role: 'assistant', content: clipText(root.result, 4000) },
   ];
@@ -2039,242 +2030,360 @@ function renderMarkdown(text) {
   return html;
 }
 
-// ---------- AI 抽屉 ----------
-// analyses / viewId / workId 是「分析记录」用到的：
-//   analyses 打开抽屉时从当前作品载入，viewId 为 null 表示处在「新分析」态，
-//   有值表示正在看某一条（此时按钮变成「继续追问」）
-let aiState = { mode: 'full', result: '', busy: false, analyses: [], viewId: null, workId: null };
+// ---------- 改文（对话页） ----------
+// 以前这里是编辑器里的抽屉：一次诊断、一份报告、关掉就没了。
+// 现在是一页对话 —— 把作品里的 analyses 当作聊天记录来读：
+// 每一轮 = 你说的话（question，附带当时的模式/选段）+ 编辑的回话（result）。
+// 记录仍然跟着稿子存在作品里，删稿子就一起没了。
+let polishState = { workId: null, busy: false, textOpen: false, saveTimer: null };
 
-function getEditorSelection() {
-  const ta = document.getElementById('editor-content');
+// 编辑的名字，可以在「我的」里改
+const POLISH_DEFAULT_NAME = '阿笺';
+function polishEditorName() {
+  const s = DB.getSettings();
+  return (s && s.editorName) ? s.editorName : POLISH_DEFAULT_NAME;
+}
+
+// 她的说话方式 —— 每次请求现拼，改了名字立刻生效
+function buildSystemPrompt() {
+  const name = polishEditorName();
+  return `你叫${name}，是一个写短篇的女编辑，也是她的同行。她写小说，你不写她的句子。
+
+她把自己的稿子拿给你看，你们一起聊怎么改。你比她大几岁，说话直接，不客套，不夸她，也不哄她。
+
+【最重要的一条，任何时候都不能破】只告诉她问题在哪、可以往哪个方向想。
+绝对不要给她改写好的句子——一个完整的句子都不要给。她不要现成的答案，你给了句子就是帮倒忙，她会被你的措辞带着走。
+哪怕她主动求你写一句、说「你就随便给我一句」，也要拒绝，然后换个方向提示她。
+
+【说话方式】这是聊天，不是交报告。
+- 每次别写长，三到六句，像微信上跟朋友聊稿子那样，说完就停
+- 不用固定套路，别每次都「先肯定、再说问题、最后给方向」，那像模板
+- 她说不同意、说你没看懂、反驳你，你就接着说。可以坚持你的判断，也可以被她说服，但都要给理由
+- 不要用 markdown 标题、不要列一二三，就用平常的话说
+- 只有她明确问「哪里最值得留」，才具体点到某一句、某个词
+
+她的口味：不喜欢华丽的辞藻，不喜欢过分煽情，喜欢戛然而止，喜欢情绪的起起落落，只写 1v1。
+用中文。`;
+}
+
+// 编辑器右上角「拿去改文」：先把正在写的存了再跳，不然刚打的那几行留在编辑器里没落盘
+function gotoPolish() {
+  if (state.currentWorkId) saveCurrentWork();
+  navigate('polish', state.currentWorkId ? 'id=' + state.currentWorkId : '');
+}
+
+/* ---- 选哪一篇 ---- */
+function polishWorkList() {
+  // 灵感是碎片，不拿来改文；只列小说
+  return DB.getWorks().filter(w => w.type === 'novel');
+}
+function polishWork() {
+  return DB.getWorks().find(w => w.id === polishState.workId) || null;
+}
+function polishEntries() {
+  const w = polishWork();
+  return (w && Array.isArray(w.analyses)) ? w.analyses : [];
+}
+
+function renderPolishPage(preferId) {
+  const works = polishWorkList();
+  const sel = document.getElementById('polish-work');
+  if (!sel) return;
+  if (!works.length) {
+    sel.innerHTML = '<option value="">还没有作品</option>';
+    polishState.workId = null;
+    const ta = document.getElementById('polish-text');
+    if (ta) ta.value = '';
+    renderPolishThread();
+    updatePolishSelChip();
+    updatePolishWordcount();
+    return;
+  }
+  const keep = preferId || polishState.workId;
+  const cur = works.some(w => w.id === keep) ? keep : works[0].id;
+  polishState.workId = cur;
+  sel.innerHTML = works.map(w =>
+    `<option value="${w.id}"${w.id === cur ? ' selected' : ''}>${escapeHtml(w.title || '未命名')}</option>`
+  ).join('');
+  loadPolishWork();
+}
+
+function onPolishWorkChange(id) {
+  // 换篇之前先把这一篇没存下的字存了，否则改到一半切走就丢了
+  if (polishState.saveTimer) { clearTimeout(polishState.saveTimer); polishState.saveTimer = null; savePolishText(); }
+  polishState.workId = id;
+  loadPolishWork();
+}
+
+function loadPolishWork() {
+  const w = polishWork();
+  const ta = document.getElementById('polish-text');
+  if (ta) ta.value = w ? (w.content || '') : '';
+  const st = document.getElementById('polish-save-status');
+  if (st) st.textContent = '';
+  renderPolishThread();
+  updatePolishSelChip();
+  updatePolishWordcount();
+}
+
+/* ---- 原文区（可以直接在这儿改，改的就是那一篇的正文） ---- */
+function togglePolishText() {
+  polishState.textOpen = !polishState.textOpen;
+  const wrap = document.getElementById('polish-text-wrap');
+  const chev = document.getElementById('polish-text-chevron');
+  if (wrap) wrap.style.display = polishState.textOpen ? 'block' : 'none';
+  if (chev) chev.style.transform = polishState.textOpen ? 'rotate(180deg)' : '';
+}
+
+function onPolishTextInput() {
+  updatePolishWordcount();
+  updatePolishSelChip();
+  const st = document.getElementById('polish-save-status');
+  if (st) st.textContent = '保存中…';
+  if (polishState.saveTimer) clearTimeout(polishState.saveTimer);
+  polishState.saveTimer = setTimeout(savePolishText, 1500);
+}
+
+function savePolishText() {
+  const w0 = polishWork();
+  if (!w0) return;
+  const ta = document.getElementById('polish-text');
+  if (!ta) return;
+  // 和编辑器同一个坑：绝不能拿进 await 之前那份 works 写回去，否则会冲掉这期间她打的字。
+  // 重新读一次，只改这一篇的正文。
+  const works = DB.getWorks();
+  const w = works.find(x => x.id === w0.id);
+  if (!w) return;
+  w.content = ta.value;
+  w.updatedAt = new Date().toISOString();
+  DB.saveWorks(works);
+  const st = document.getElementById('polish-save-status');
+  if (st) st.textContent = '✓ 已保存';
+  polishState.saveTimer = null;
+}
+
+function updatePolishWordcount() {
+  const ta = document.getElementById('polish-text');
+  const el = document.getElementById('polish-wordcount');
+  if (el) el.textContent = countChars(ta ? ta.value : '') + ' 字';
+}
+
+/* ---- 「用选中的这段」 ---- */
+function getPolishSelection() {
+  const ta = document.getElementById('polish-text');
   if (!ta) return '';
   const s = ta.selectionStart, e = ta.selectionEnd;
   if (typeof s !== 'number' || typeof e !== 'number' || e <= s) return '';
   return ta.value.slice(s, e);
 }
-
-function renderAIBody(html) {
-  const el = document.getElementById('ai-body');
-  if (el) el.innerHTML = html;
-}
-
-function openAISheet() {
-  const sel = getEditorSelection();
-  aiState.result = '';
-  aiState.mode = sel ? 'selection' : 'full';
-  // 载入这篇已有的分析记录；默认进「新分析」态（抽屉主职是拿新意见，不是看旧的）
-  aiState.workId = state.currentWorkId;
-  aiState.viewId = null;
-  aiState.analyses = getCurrentAnalyses();
-  const q = document.getElementById('ai-question');
-  if (q) q.value = '';
-  renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">选一个模式，让它看看</div></div>');
-  renderAIHistory();
-  syncAIModes();
-  syncAIView();
-  document.getElementById('ai-sheet-overlay').classList.add('show');
-}
-
-function closeAISheet() {
-  const el = document.getElementById('ai-sheet-overlay');
-  if (el) el.classList.remove('show');
-  aiState.viewId = null;
-}
-
-// ---------- 分析记录 ----------
-function getCurrentAnalyses() {
-  const works = DB.getWorks();
-  const w = works.find(x => x.id === state.currentWorkId);
-  return (w && Array.isArray(w.analyses)) ? w.analyses : [];
-}
-
-function renderAIHistory() {
-  const el = document.getElementById('ai-history');
-  if (!el) return;
-  // 用数组下标传参，不传 id——跟作品页标签筛选同一个理由，避免内容把 onclick 拆坏
-  let html = aiState.analyses.map((a, i) =>
-    `<button class="cat-chip ${a.id === aiState.viewId ? 'active' : ''}" onclick="viewAnalysisAt(${i})">` +
-    `${a.parentId ? '↳ ' : ''}分析${i + 1}</button>`
-  ).join('');
-  // 查看某条时模式行是藏起来的，得给一个回到「新分析」态的出口
-  if (aiState.viewId) {
-    html += '<button class="cat-chip" onclick="startNewAnalysis()">＋ 新分析</button>';
+function updatePolishSelChip() {
+  const chip = document.getElementById('polish-sel-chip');
+  if (!chip) return;
+  const sel = getPolishSelection();
+  if (sel) {
+    chip.textContent = '用选中的 ' + countChars(sel) + ' 字 ✕';
+    chip.classList.add('on');
+  } else {
+    chip.textContent = '没选中（聊整篇）';
+    chip.classList.remove('on');
   }
-  el.innerHTML = html;
 }
-
-function viewAnalysisAt(i) {
-  const a = aiState.analyses[i];
-  if (!a) return;
-  aiState.viewId = a.id;
-  aiState.result = a.result;
-  renderAIHistory();
-  syncAIView();
-  renderAIBody(renderAnalysisView(a, i));
-}
-
-function startNewAnalysis() {
-  aiState.viewId = null;
-  aiState.result = '';
-  const q = document.getElementById('ai-question');
-  if (q) q.value = '';
-  renderAIHistory();
-  syncAIView();
-  renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">选一个模式，让它看看</div></div>');
-}
-
-function renderAnalysisView(a, i) {
-  const modeLabel = a.mode === 'selection' ? '针对选中那段' : '通篇诊断';
-  return `<div class="ai-analysis-head">
-      <span class="ai-analysis-title">分析${i + 1} · ${formatDate(a.createdAt)} · ${modeLabel}</span>
-      <button class="ai-analysis-del" onclick="deleteAnalysis('${a.id}')">删除</button>
-    </div>
-    ${a.question ? `<div class="ai-analysis-q">你问：${escapeHtml(a.question)}</div>` : ''}
-    <div class="ai-md">${renderMarkdown(a.result)}</div>`;
-}
-
-function deleteAnalysis(id) {
-  showModal('删除这条分析', '删掉之后就找不回来了。确定吗？', () => {
-    const works = DB.getWorks();
-    const w = works.find(x => x.id === state.currentWorkId);
-    if (!w || !Array.isArray(w.analyses)) return;
-    const target = w.analyses.find(a => a.id === id);
-    if (!target) return;
-    // 子节点重挂到被删节点的父级，否则追问链会在这里断掉
-    w.analyses = w.analyses
-      .filter(a => a.id !== id)
-      .map(a => a.parentId === id ? { ...a, parentId: target.parentId || null } : a);
-    DB.saveWorks(works);
-    aiState.analyses = w.analyses;
-    if (aiState.viewId === id) {
-      aiState.viewId = null;
-      aiState.result = '';
-      renderAIBody('<div class="empty-state" style="padding:28px 16px"><div class="empty-text">这条已经删掉了</div></div>');
-    }
-    renderAIHistory();
-    syncAIView();
-    toast('已删除');
-  });
-}
-
-// 抽屉两种状态的开关：新分析态 / 查看某条分析
-function syncAIView() {
-  const viewing = !!aiState.viewId;
-  const modes = document.querySelector('.ai-modes');
-  if (modes) modes.style.display = viewing ? 'none' : '';
-  const q = document.getElementById('ai-question');
-  if (q) q.placeholder = viewing ? '想追问什么？' : '还想问点什么？（可不填）';
-  const runBtn = document.getElementById('btn-ai-run');
-  if (runBtn) runBtn.textContent = viewing ? '继续追问' : '开始分析';
-  const copyBtn = document.getElementById('btn-ai-copy');
-  if (copyBtn) copyBtn.style.display = (viewing || aiState.result) ? '' : 'none';
-}
-
-function syncAIModes() {
-  const sel = getEditorSelection();
-  document.querySelectorAll('.ai-mode').forEach(b => {
-    b.classList.toggle('active', b.dataset.mode === aiState.mode);
-  });
-  const hint = document.getElementById('ai-sel-hint');
-  if (hint) hint.textContent = sel ? sel.length + ' 字' : '没选中';
-}
-
-function setAIMode(mode) {
-  if (mode === 'selection' && !getEditorSelection()) {
-    toast('先在正文里划一段');
+function usePolishSelection() {
+  const ta = document.getElementById('polish-text');
+  if (!ta) return;
+  if (getPolishSelection()) {          // 已经选中了，点一下 = 取消
+    ta.selectionStart = ta.selectionEnd = 0;
+    updatePolishSelChip();
     return;
   }
-  aiState.mode = mode;
-  syncAIModes();
+  if (!polishState.textOpen) togglePolishText();   // 没选中就把原文摊开，让她去划
+  ta.focus();
+  toast('在原文里划一段，就说这一段');
 }
 
-async function runAIReview() {
-  if (aiState.busy) return;
+/* ---- 对话渲染 ---- */
+// 对话不是独立滚动区，整页会跟着长。她发完一条要是停在屏幕外，等于没回。
+function polishScrollToBottom() {
+  if (typeof window === 'undefined' || typeof window.scrollTo !== 'function') return;
+  const h = document.body ? document.body.scrollHeight : 0;
+  if (h > 0) window.scrollTo({ top: h, behavior: 'smooth' });
+}
 
-  const ta = document.getElementById('editor-content');
-  const fullText = ta ? ta.value : '';
-  if (!fullText.trim()) { toast('正文还是空的'); return; }
+function renderPolishThread() {
+  const box = document.getElementById('polish-thread');
+  if (!box) return;
+  const w = polishWork();
+  if (!w) {
+    box.innerHTML = '<div class="polish-empty">先去「作品」写一篇，再拿来改</div>';
+    return;
+  }
+  const list = polishEntries();
+  const name = polishEditorName();
+  if (!list.length) {
+    box.innerHTML = '<div class="polish-empty">还没聊过。<br>在下面说一句，或者直接问她「这篇怎么样」。</div>';
+    return;
+  }
+  box.innerHTML = list.map((a, i) => polishBubbleYou(a) + polishBubbleHer(a, i, name)).join('');
+  box.scrollTop = box.scrollHeight;
+  polishScrollToBottom();
+}
 
-  const selection = getEditorSelection();
-  const viewingId = aiState.viewId;   // 有值 = 对着某条已有分析追问
-  if (!viewingId && aiState.mode === 'selection' && !selection) { toast('先在正文里划一段'); return; }
+function polishBubbleYou(a) {
+  const quoted = a.selection
+    ? `<div class="polish-quote">${escapeHtml(clipText(a.selection, 140))}</div>`
+    : '';
+  const body = a.question
+    ? escapeHtml(a.question)
+    : (a.mode === 'selection' ? '（这段，你看看）' : '（整篇，你看看）');
+  return `<div class="polish-row me"><div class="polish-bubble you">${quoted}<div class="polish-you-text">${body}</div></div></div>`;
+}
 
-  const extra = (document.getElementById('ai-question') || {}).value || '';
-  if (viewingId && !extra.trim()) { toast('先写一句想问的'); return; }
+function polishBubbleHer(a, i, name) {
+  return `<div class="polish-row her">
+      <div class="polish-avatar">✎</div>
+      <div class="polish-bubble her">
+        <div class="polish-who">${escapeHtml(name)} · ${formatDate(a.createdAt)}</div>
+        <div class="ai-md">${renderMarkdown(a.result)}</div>
+        <div class="polish-acts">
+          <button class="polish-act" onclick="copyPolishAt(${i})">复制</button>
+          <button class="polish-act del" onclick="deletePolishAt(${i})">删掉这一轮</button>
+        </div>
+      </div>
+    </div>`;
+}
 
-  const workId = state.currentWorkId;   // await 前存下 id，回来后用它重新找
-  const btn = document.getElementById('btn-ai-run');
-  const copyBtn = document.getElementById('btn-ai-copy');
+function deletePolishAt(i) {
+  const a = polishEntries()[i];
+  const w0 = polishWork();
+  if (!a || !w0) return;
+  showModal('删掉这一轮', '你问的那句和她回的那段一起没。后面的还留着。', () => {
+    const works = DB.getWorks();
+    const w = works.find(x => x.id === w0.id);
+    if (!w || !Array.isArray(w.analyses)) return;
+    const target = w.analyses.find(x => x.id === a.id);
+    if (!target) return;
+    // 子节点重挂到被删节点的父级，否则后面的追问链会在这里断掉
+    w.analyses = w.analyses
+      .filter(x => x.id !== a.id)
+      .map(x => x.parentId === a.id ? Object.assign({}, x, { parentId: target.parentId || null }) : x);
+    DB.saveWorks(works);
+    renderPolishThread();
+    toast('删掉了');
+  });
+}
 
-  // 消息在 await 前构建好（都用此刻的快照）
-  let messages;
-  let entryMode = aiState.mode;
-  if (viewingId) {
-    const w0 = DB.getWorks().find(x => x.id === workId);
-    if (!w0) { toast('这篇稿子找不到了'); return; }
-    messages = buildFollowupMessages(w0, viewingId, extra, fullText);
-    if (!messages) { toast('这条分析已经不在了'); return; }
-    const parent = (w0.analyses || []).find(a => a.id === viewingId);
-    if (parent) entryMode = parent.mode;
+function clearPolishThread() {
+  const w0 = polishWork();
+  if (!w0) { toast('先选一篇'); return; }
+  if (!polishEntries().length) { toast('本来就没有记录'); return; }
+  showModal('清空记录', '这一篇的改文记录全部删掉。原文一个字都不动。', () => {
+    const works = DB.getWorks();
+    const w = works.find(x => x.id === w0.id);
+    if (!w) return;
+    w.analyses = [];
+    DB.saveWorks(works);
+    renderPolishThread();
+    toast('记录清空了');
+  });
+}
+
+function copyPolishAt(i) {
+  const a = polishEntries()[i];
+  if (!a || !a.result) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(a.result).then(() => toast('复制了')).catch(() => toast('复制失败，手动选一下吧'));
   } else {
-    messages = buildReviewMessages(aiState.mode, fullText, selection, extra);
+    toast('这个浏览器不支持自动复制');
+  }
+}
+
+/* ---- 说话 ---- */
+function appendPolishPending(text, sel) {
+  const box = document.getElementById('polish-thread');
+  if (!box) return;
+  if (!box.querySelector('.polish-row')) box.innerHTML = '';
+  const name = polishEditorName();
+  const quoted = sel ? `<div class="polish-quote">${escapeHtml(clipText(sel, 140))}</div>` : '';
+  box.insertAdjacentHTML('beforeend',
+    `<div class="polish-row me"><div class="polish-bubble you">${quoted}<div class="polish-you-text">${escapeHtml(text)}</div></div></div>` +
+    `<div class="polish-row her"><div class="polish-avatar">✎</div><div class="polish-bubble her">` +
+    `<div class="polish-who">${escapeHtml(name)}</div><div class="polish-typing">正在读你的稿子……</div></div></div>`
+  );
+  box.scrollTop = box.scrollHeight;
+  polishScrollToBottom();
+}
+
+async function sendPolish() {
+  if (polishState.busy) return;
+  const w0 = polishWork();
+  if (!w0) { toast('先去「作品」写一篇吧'); return; }
+
+  const inp = document.getElementById('polish-input');
+  const text = (inp ? inp.value : '').trim();
+  const list = polishEntries();
+  if (list.length && !text) { toast('想说点什么？'); return; }
+  if (!WriterAI.hasKey()) { toast('先在「我的」里填 API Key'); return; }
+
+  const ta = document.getElementById('polish-text');
+  const fullText = ta ? ta.value : (w0.content || '');
+  if (!String(fullText).trim()) { toast('这一篇还是空的'); return; }
+  // 把刚打的字立刻存下，免得 AI 这十几秒里她改的东西没落盘
+  if (polishState.saveTimer) { clearTimeout(polishState.saveTimer); polishState.saveTimer = null; savePolishText(); }
+
+  const sel = getPolishSelection();
+  const workId = w0.id;
+  const lastId = list.length ? list[list.length - 1].id : null;
+  const mode = list.length ? (list[list.length - 1].mode || 'full') : (sel ? 'selection' : 'full');
+
+  let messages;
+  if (list.length) {
+    messages = buildFollowupMessages(w0, lastId, text, fullText);
+    if (!messages) { toast('记录对不上了，清空重来吧'); return; }
+  } else {
+    messages = buildReviewMessages(mode, fullText, sel, text);
   }
 
-  aiState.busy = true;
-  btn.disabled = true;
-  btn.textContent = '分析中…';
-  copyBtn.style.display = 'none';
-  renderAIBody(
-    '<div class="ai-loading"><div class="ai-spinner"></div>' +
-    '<div class="ai-loading-text">正在读你的稿子……通常十几秒</div></div>'
-  );
+  polishState.busy = true;
+  const btn = document.getElementById('polish-send');
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  if (inp) inp.value = '';
+  appendPolishPending(text || (mode === 'selection' ? '（这段，你看看）' : '（整篇，你看看）'), sel);
 
   try {
     const result = await WriterAI.chat(messages);
 
-    // ↓↓↓ 这一整段必须是同步的。AI 请求要十几秒，期间她的每次输入都会触发
-    // saveCurrentWork()（1500ms 防抖）。所以这里绝不能拿 await 之前那份 works
-    // 写回去——那会把她这十几秒打的字全部冲掉。重新读一次再改。
+    // ↓↓↓ 这一整段必须同步，而且必须重新读一次 works。
+    // AI 请求要十几秒，期间她的每次输入都会触发存盘；拿进 await 之前那份写回去，
+    // 会把这十几秒里她打的字全部冲掉。
     const works = DB.getWorks();
     const w = works.find(x => x.id === workId);
-    if (!w) throw new Error('这篇稿子已经不在了，分析结果没能保存');
+    if (!w) throw new Error('这篇稿子已经不在了，结果没能存下');
 
     const entry = {
       id: DB.genId(),
-      parentId: viewingId || null,
+      parentId: lastId,
       createdAt: new Date().toISOString(),
-      mode: entryMode,
-      selection: viewingId ? '' : selection,
-      question: extra.trim(),
-      result,
+      mode: mode,
+      selection: list.length ? '' : sel,
+      question: text,
+      result: result,
     };
-    w.analyses = [...(w.analyses || []), entry];
+    w.analyses = (w.analyses || []).concat([entry]);
     DB.saveWorks(works);
-
-    aiState.analyses = w.analyses;
-    aiState.viewId = entry.id;
-    aiState.result = result;
-    renderAIHistory();
-    syncAIView();
-    renderAIBody(renderAnalysisView(entry, w.analyses.length - 1));
+    renderPolishThread();
   } catch (err) {
-    aiState.result = '';
-    renderAIBody('<div class="ai-error">' + escapeHtml(err.message) + '</div>');
+    renderPolishThread();
+    const box = document.getElementById('polish-thread');
+    if (box) {
+      box.insertAdjacentHTML('beforeend',
+        '<div class="polish-row her"><div class="polish-avatar">!</div>' +
+        '<div class="polish-bubble her polish-err">' + escapeHtml(err.message) + '</div></div>');
+      box.scrollTop = box.scrollHeight;
+    }
   } finally {
-    aiState.busy = false;
-    btn.disabled = false;
-    syncAIView();   // 恢复按钮文案（新分析态「开始分析」/ 查看态「继续追问」）
-  }
-}
-
-function copyAIResult() {
-  if (!aiState.result) return;
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(aiState.result)
-      .then(() => toast('已复制'))
-      .catch(() => toast('复制失败，手动选一下吧'));
-  } else {
-    toast('这个浏览器不支持自动复制');
+    polishState.busy = false;
+    if (btn) { btn.disabled = false; btn.textContent = '说'; }
+    updatePolishSelChip();
   }
 }
 
@@ -2289,7 +2398,19 @@ function renderMe() {
   if (modelEl) modelEl.value = cfg.model;
   const toggle = document.getElementById('ai-key-toggle');
   if (toggle) toggle.textContent = '显示';
+  const nameEl = document.getElementById('editor-name');
+  if (nameEl) nameEl.value = polishEditorName();
   renderThemeDots();
+}
+
+// 改文页那个编辑的名字。空着就回到默认的「阿笺」——聊天记录里存的是名字不是 ID，
+// 改了名字以后新对话立刻用新的，旧记录不动（改完还是她，没必要回头给她改名）。
+function saveEditorName(v) {
+  const s = DB.getSettings();
+  s.editorName = String(v || '').trim().slice(0, 12);
+  DB.saveSettings(s);
+  toast(s.editorName ? '记下了，她以后叫' + s.editorName : '回到默认的「' + POLISH_DEFAULT_NAME + '」');
+  if (typeof renderPolishThread === 'function') renderPolishThread();
 }
 
 function toggleKeyVisible() {
@@ -2766,9 +2887,6 @@ function deleteCollected(id) {
 // ============================================================
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  // Escape：先关 AI 抽屉，再关确认弹窗
-  const sheet = document.getElementById('ai-sheet-overlay');
-  if (sheet && sheet.classList.contains('show')) { closeAISheet(); return; }
   closeModal();
 });
 
